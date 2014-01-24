@@ -5,8 +5,10 @@ var TheIncredibleStory = Class.create({
 
         this.game = new Core(1280, 720);
         this.game.preload("assets/graphics/level1/levelMap.map");
+        this.game.preload("assets/graphics/level1/middleMap.map");
         this.game.preload("assets/graphics/level1/collision.map");
         this.game.preload("assets/graphics/levelTiles.png");
+        this.game.preload("assets/graphics/middleTiles.png");
         this.game.rootScene.backgroundColor = "blue";
 
         var that = this;
