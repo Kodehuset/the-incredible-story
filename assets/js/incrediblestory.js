@@ -25,6 +25,8 @@ var TheIncredibleStory = Class.create({
             that.game.pushScene(levelOne);
         };
 
+        this.game.scale = $(window).width() / this.game.width;
+
     },
     run: function () {
 
