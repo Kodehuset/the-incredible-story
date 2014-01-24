@@ -13,11 +13,11 @@ var TheIncredibleStory = Class.create({
 
             var levelOne = new Scene();
 
-            var levelSprite = new Map(48, 48);
+            var levelSprite = new Map(32, 32);
             levelSprite.image = that.game.assets['assets/graphics/levelMap.png'];
 
             var map = eval(that.game.assets["assets/graphics/level1/levelMap.map"]);
-            console.log(map);
+
             levelSprite.loadData(map);
 
             levelOne.addChild(levelSprite);
