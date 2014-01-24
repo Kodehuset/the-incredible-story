@@ -31,7 +31,7 @@ var TheIncredibleStory = Class.create({
             that.game.addEventListener(Event.RIGHT_BUTTON_DOWN, function () {
 
 
-                if(that.player.x + that.player.image.width + 10 > levelOne.levelSprite.width) {
+                if (that.player.x + that.player.image.width + 10 > levelOne.levelSprite.width) {
                     return;
                 }
 
@@ -40,7 +40,7 @@ var TheIncredibleStory = Class.create({
                     that.player.x = new_x;
                 }
 
-                if (that.player.x > that.game.width - 300 && (Math.abs(levelOne.x) + that.game.width < levelOne.levelSprite.width)) {
+                if (that.player.x > that.game.width - 300 && (Math.abs(levelOne.x) + that.game.width < levelOne.getLevelWidth())) {
                     levelOne.x -= 10;
                 }
 
@@ -69,10 +69,19 @@ var TheIncredibleStory = Class.create({
                     return;
                 }
 
-                var new_y = that.player.y - 10;
-                if (levelOne.collides(that.player.x, new_y - that.player.height) === false) {
-                    that.player.y = new_y;
+                var new_y = that.player.y - 50;
+                if (levelOne.collides(that.player.x, new_y - that.player.height) === false && !that.player.isJumping) {
+                    var original_y = that.player.y;
+                    that.player.isJumping = true;
+                    that.player.tl.moveTo(that.player.x, new_y, 5).then(function () {
+
+                        that.player.tl.moveTo(that.player.x, original_y, 5).then(function() {
+                            that.player.isJumping = false;
+                        });
+
+                    });
                 }
+
 
             });
 

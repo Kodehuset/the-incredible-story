@@ -54,6 +54,10 @@ var LevelScene = Class.create(Scene, {
         }
     },
 
+    getLevelWidth: function() {
+      return this.levelSprite.width;
+    },
+
     collides: function (x, y) {
 
         return this.levelSprite.hitTest(x, y);
