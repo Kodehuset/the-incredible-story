@@ -5,18 +5,19 @@ var LevelScene = Class.create(Scene, {
     levelSprite: null,
 
     init: function (level) {
-        var game, map;
+        var game, levelMap, collisionData;
 
         Scene.apply(this);
 
         game = Game.instance;
 
         this.levelSprite = new Map(32, 32);
-        this.levelSprite.image = game.assets['assets/graphics/levelMap.png'];
+        this.levelSprite.image = game.assets['assets/graphics/levelTiles.png'];
 
-        map = eval(game.assets["assets/graphics/" + level + "/levelMap.map"]);
-
-        this.levelSprite.loadData(map);
+        levelMap = eval(game.assets["assets/graphics/" + level + "/levelMap.map"]);
+        collisionData = eval(game.assets["assets/graphics/" + level + "/collision.map"]);
+        this.levelSprite.collisionData = collisionData;
+        this.levelSprite.loadData(levelMap);
 
         this.addChild(this.levelSprite);
 
