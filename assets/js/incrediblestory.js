@@ -4,8 +4,8 @@ var TheIncredibleStory = Class.create({
     initialize: function () {
 
         this.game = new Core(1280, 720);
-        this.game.preload("assets/graphics/level1/levelMap.map");
-        this.game.preload("assets/graphics/level1/middleMap.map");
+        this.game.preload("assets/graphics/level1/level.map");
+        this.game.preload("assets/graphics/level1/middle.map");
         this.game.preload("assets/graphics/level1/background.map");
         this.game.preload("assets/graphics/level1/collision.map");
         this.game.preload("assets/graphics/levelTiles.png");
