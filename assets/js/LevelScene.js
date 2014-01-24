@@ -40,5 +40,22 @@ var LevelScene = Class.create(Scene, {
         this.addChild(this.levelSprite);
 
 
+    },
+
+    getPlayerStartY: function () {
+
+        var y = 0;
+        while (true) {
+            if (this.levelSprite.hitTest(0, y) === true) {
+                return y;
+            }
+
+            y++;
+        }
+    },
+
+    collides: function (x, y) {
+
+        return this.levelSprite.hitTest(x, y);
     }
 });
