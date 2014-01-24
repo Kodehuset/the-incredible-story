@@ -4,6 +4,7 @@
     <title></title>
     <script type="text/javascript" src="assets/js/enchantjs/enchant.js"></script>
     <script type="text/javascript" src="assets/js/incrediblestory.js"></script>
+    <script type="text/javascript" src="assets/js/LevelScene.js"></script>
     <script type="text/javascript" src="http://code.jquery.com/jquery-2.0.3.js"></script>
 </head>
 <body>
@@ -11,8 +12,9 @@
 <script type="text/javascript">
     $(document).ready(function () {
         enchant();
-        TheIncredibleStory.initialize();
-        TheIncredibleStory.run();
+        var theIncredibleStory = new TheIncredibleStory();
+        theIncredibleStory.initialize();
+        theIncredibleStory.run();
     });
 </script>
 </body>

@@ -1,3 +1,4 @@
+enchant();
 var LevelScene = Class.create(Scene, {
     backgroundSprite: null,
     middleSprite: null,
@@ -10,12 +11,6 @@ var LevelScene = Class.create(Scene, {
 
         game = Game.instance;
 
-        levelSprite = new Map(32, 32);
-        levelSprite.image = game.assets['assets/graphics/levelMap.png'];
 
-        var map = game.assets["assets/graphics/level1/levelMap.map"];
-        levelSprite.loadData(map);
-
-        this.addChild(levelSprite);
     }
 });
