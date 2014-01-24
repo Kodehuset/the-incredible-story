@@ -3,7 +3,7 @@ var TheIncredibleStory = {
     initialize: function () {
 
         game = new Core(1280, 720);
-        game.preload("assets/graphics/levelMap.map");
+        game.preload("assets/graphics/level1/levelMap.map");
         game.rootScene.backgroundColor = "blue";
         game.onload = function() {
 
