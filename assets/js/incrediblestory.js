@@ -75,7 +75,7 @@ var TheIncredibleStory = Class.create({
                     that.player.isJumping = true;
                     that.player.tl.moveTo(that.player.x, new_y, 5).then(function () {
 
-                        that.player.tl.moveTo(that.player.x, original_y, 5).then(function() {
+                        that.player.tl.moveTo(that.player.x, original_y, 5).then(function () {
                             that.player.isJumping = false;
                         });
 
