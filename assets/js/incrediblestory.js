@@ -11,16 +11,8 @@ var TheIncredibleStory = Class.create({
         var that = this;
         this.game.onload = function () {
 
-            var levelOne = new Scene();
-
-            var levelSprite = new Map(32, 32);
-            levelSprite.image = that.game.assets['assets/graphics/levelMap.png'];
-
-            var map = eval(that.game.assets["assets/graphics/level1/levelMap.map"]);
-
-            levelSprite.loadData(map);
-
-            levelOne.addChild(levelSprite);
+            var levelOne = new LevelScene();
+            levelOne.init("level1");
 
             that.game.pushScene(levelOne);
         };
