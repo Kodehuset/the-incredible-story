@@ -5,7 +5,7 @@ var LevelScene = Class.create(Scene, {
     levelSprite: null,
 
     init: function (level) {
-        var game, levelMap, collisionData, middleMap, backgroundMap;
+        var game, levelMap, collisionData, middleMap, backgroundMap, interractMap, interractCollisionData;
 
         Scene.apply(this);
 
@@ -39,7 +39,6 @@ var LevelScene = Class.create(Scene, {
 
         this.addChild(this.levelSprite);
 
-
     },
 
     getPlayerStartY: function () {
@@ -54,12 +53,18 @@ var LevelScene = Class.create(Scene, {
         }
     },
 
-    getLevelWidth: function() {
-      return this.levelSprite.width;
+    getLevelWidth: function () {
+        return this.levelSprite.width;
     },
 
     collides: function (x, y) {
 
         return this.levelSprite.hitTest(x, y);
+    },
+
+
+    stepsOnTile: function (player) {
+
+        return this.levelSprite.checkTile(player.x + (player.width / 2), player.y + player.height + 2);
     }
 });

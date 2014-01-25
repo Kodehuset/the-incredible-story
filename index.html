@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>The Incredible Story of Stan And His Lost Dog</title>
+    <title>The Peculiar Story of Alfred And His Dog</title>
     <script type="text/javascript" src="assets/js/enchantjs/enchant.js"></script>
     <script type="text/javascript" src="assets/js/incrediblestory.js"></script>
     <script type="text/javascript" src="assets/js/LevelScene.js"></script>
     <script type="text/javascript" src="http://code.jquery.com/jquery-2.0.3.js"></script>
-    <link rel="stylesheet" href="assets/css/incrediblestory.css" />
+    <link rel="stylesheet" href="assets/css/incrediblestory.css"/>
 </head>
 <body>
 
@@ -14,6 +14,9 @@
     $(document).ready(function () {
         enchant();
         var theIncredibleStory = new TheIncredibleStory();
+        $(document).keyup(function (event) {
+            theIncredibleStory.keyUp(event);
+        });
         theIncredibleStory.initialize();
         theIncredibleStory.run();
     });
