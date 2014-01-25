@@ -197,7 +197,7 @@ var TheIncredibleStory = Class.create({
     interractWithTile: function (tile) {
 
 
-        var tileIsRift = tile === GameParams.riftTile;
+        var tileIsRift = tile === 9 || tile === 10;
         if (tileIsRift && this.player.morph === GameParams.springMorph) {
             var player = this.player;
             player.isInterracting = true;
