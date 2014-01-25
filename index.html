@@ -14,6 +14,9 @@
     $(document).ready(function () {
         enchant();
         var theIncredibleStory = new TheIncredibleStory();
+        $(document).keyup(function(event) {
+            theIncredibleStory.keyUp(event);
+        });
         theIncredibleStory.initialize();
         theIncredibleStory.run();
     });

@@ -1,10 +1,15 @@
 enchant();
 var GameParams = {
-    jumpHeight: 75,
-    horizontalMoveInterval: 25,
-    gravity: 10,
-    startGravity: 10,
-    playfieldPushDistance: 300
+    jumpHeight: 150,
+    horizontalMoveInterval: 40,
+    gravity: 15,
+    startGravity: 15,
+    playfieldPushDistance: 400,
+    playfieldPushInterval: 10,
+    riftTile: 2,
+    ladderMorph: 1,
+    drillMorph: 2,
+    springMorph: 3
 
 };
 
@@ -18,8 +23,6 @@ var TheIncredibleStory = Class.create({
         this.game.preload("assets/graphics/level1/middle.map");
         this.game.preload("assets/graphics/level1/background.map");
         this.game.preload("assets/graphics/level1/collision.map");
-        this.game.preload("assets/graphics/level1/interract.map");
-        this.game.preload("assets/graphics/level1/interract_collision.map");
         this.game.preload("assets/graphics/levelTiles.png");
         this.game.preload("assets/graphics/middleTiles.png");
         this.game.preload("assets/graphics/backgroundTiles.png");
@@ -45,6 +48,11 @@ var TheIncredibleStory = Class.create({
                     return;
                 }
 
+
+                if (that.player.x > that.game.width - GameParams.playfieldPushDistance && (Math.abs(levelOne.x) + that.game.width < levelOne.getLevelWidth())) {
+                    levelOne.x -= GameParams.playfieldPushInterval;
+                }
+
                 if (that.player.isMoving === true) {
                     return;
                 }
@@ -53,10 +61,6 @@ var TheIncredibleStory = Class.create({
                 that.player.moveXPerFrame = (new_x - that.player.x) / 5;
                 that.player.moveToX = new_x;
                 that.player.isMoving = true;
-
-                if (that.player.x > that.game.width - 300 && (Math.abs(levelOne.x) + that.game.width < levelOne.getLevelWidth())) {
-                    levelOne.x -= 10;
-                }
 
 
             });
@@ -71,6 +75,10 @@ var TheIncredibleStory = Class.create({
                     return;
                 }
 
+                if (that.player.x < Math.abs(levelOne.x) + GameParams.playfieldPushDistance && levelOne.x < 0) {
+                    levelOne.x += GameParams.playfieldPushInterval;
+                }
+
                 if (that.player.isMoving === true) {
                     return;
                 }
@@ -80,9 +88,6 @@ var TheIncredibleStory = Class.create({
                 that.player.moveToX = new_x;
                 that.player.isMoving = true;
 
-                if (that.player.x < Math.abs(levelOne.x) + 300 && levelOne.x < 0) {
-                    levelOne.x += 10;
-                }
             });
 
             that.game.addEventListener(Event.LEFT_BUTTON_UP, function () {
@@ -137,27 +142,37 @@ var TheIncredibleStory = Class.create({
                     } else {
                         that.player.x += that.player.moveXPerFrame;
                     }
+
+
                 }
 
 
-                var new_player_bottom_loc = that.player.y + that.player.height + (GameParams.gravity);
-                if (that.player.isJumping) {
-                    return;
-                } else if (levelOne.collides(that.player.x, new_player_bottom_loc) === true) {
+                if (!that.player.isJumping) {
 
-                    new_player_bottom_loc--;
-                    while (levelOne.collides(that.player.x, new_player_bottom_loc) === true) {
+                    var new_player_bottom_loc = that.player.y + that.player.height + (GameParams.gravity);
+
+                    if (levelOne.collides(that.player.x, new_player_bottom_loc) === true) {
+
                         new_player_bottom_loc--;
+                        while (levelOne.collides(that.player.x, new_player_bottom_loc) === true) {
+                            new_player_bottom_loc--;
+                        }
+
+                        that.player.y = new_player_bottom_loc - that.player.height;
+                        GameParams.gravity = GameParams.startGravity;
+                        that.player.isFalling = false;
+                    } else {
+
+                        that.player.y = that.player.y + GameParams.gravity++;
+                        that.player.isFalling = true;
                     }
+                }
 
-                    that.player.y = new_player_bottom_loc - that.player.height;
-                    GameParams.gravity = GameParams.startGravity;
-                    that.player.isFalling = false;
-                    return;
-                } else {
+                var interractionTile = levelOne.stepsOnTile(that.player);
 
-                    that.player.y = that.player.y + GameParams.gravity++;
-                    that.player.isFalling = true;
+                if (interractionTile != -1 && that.player.isInterracting !== true) {
+
+                    that.interractWithTile(interractionTile);
                 }
 
             });
@@ -168,8 +183,45 @@ var TheIncredibleStory = Class.create({
         this.game.scale = windowWidth / this.game.width;
 
     },
+
+    interractWithTile: function (tile) {
+
+
+        var tileIsRift = tile === GameParams.riftTile;
+        if (tileIsRift && this.player.morph === GameParams.springMorph) {
+            var player = this.player;
+            player.isInterracting = true;
+
+            player.tl.moveTo(player.x, player.y - 500, 5).then(function () {
+                player.isInterracting = false;
+            });
+        } else if (tileIsRift && this.player.morph === GameParams.ladderMorph) {
+
+        } else if (tileIsRift && this.player.morph === GameParams.drillMorph) {
+            
+        }
+    },
+
     run: function () {
 
         this.game.start();
+    },
+
+    keyUp: function (event) {
+
+        if (event.keyCode === 49) { // 1
+
+            this.player.morph = GameParams.ladderMorph;
+            console.log("morph 1");
+        } else if (event.keyCode === 50) { // 2
+
+            this.player.morph = GameParams.drillMorph;
+            console.log("morph 2");
+        } else if (event.keyCode === 51) { // 3
+
+            this.player.morph = GameParams.springMorph;
+            console.log("morph 3");
+        }
+
     }
 });
