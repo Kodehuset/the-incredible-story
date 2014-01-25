@@ -6,7 +6,7 @@ var GameParams = {
     startGravity: 15,
     playfieldPushDistance: 400,
     playfieldPushInterval: 10,
-    riftTile: 2,
+    riftTile: 10,
     ladderMorph: 1,
     drillMorph: 2,
     springMorph: 3
@@ -16,6 +16,8 @@ var GameParams = {
 var TheIncredibleStory = Class.create({
     game: null,
     player: null,
+    currentLevelScene: null,
+    activeLadderSprite: null,
     initialize: function () {
 
         this.game = new Core(1280, 720);
@@ -29,12 +31,14 @@ var TheIncredibleStory = Class.create({
         this.game.preload("assets/graphics/player.png");
 
         this.game.rootScene.backgroundColor = "blue";
+        this.game.fps = 30;
 
         var windowWidth = $(window).width();
         var that = this;
         this.game.onload = function () {
 
             var levelOne = new LevelScene();
+            that.currentLevelScene = levelOne;
             levelOne.init("level1");
 
             that.player = new Sprite(32, 64);
@@ -44,6 +48,7 @@ var TheIncredibleStory = Class.create({
 
             that.game.addEventListener(Event.RIGHT_BUTTON_DOWN, function () {
 
+                that.resetGravity();
                 if (that.player.x + that.player.image.width + GameParams.horizontalMoveInterval > levelOne.levelSprite.width) {
                     return;
                 }
@@ -71,6 +76,7 @@ var TheIncredibleStory = Class.create({
 
             that.game.addEventListener(Event.LEFT_BUTTON_DOWN, function () {
 
+                that.resetGravity();
                 if (that.player.x - GameParams.horizontalMoveInterval < 0) {
                     return;
                 }
@@ -95,18 +101,17 @@ var TheIncredibleStory = Class.create({
             });
 
             that.game.addEventListener(Event.UP_BUTTON_UP, function () {
-                if (that.player.y - GameParams.jumpHeight < 0 || that.player.isFalling === true) {
-                    return;
-                }
 
-                if (that.player.isJumping === true) {
-                    return;
-                }
-                var new_y = that.player.y - GameParams.jumpHeight;
-                that.player.isJumping = true;
-                that.player.jumpYPerFrame = (new_y - that.player.y) / 5;
-                that.player.jumpToY = new_y;
 
+                var player = that.player;
+                if (player.morph === GameParams.ladderMorph) {
+                    if (that.activeLadderSprite.within(player) === true) {
+                        GameParams.gravity = 0;
+                        player.y -= GameParams.horizontalMoveInterval;
+                    } else {
+                        that.resetGravity();
+                    }
+                }
 
             });
 
@@ -159,11 +164,11 @@ var TheIncredibleStory = Class.create({
                         }
 
                         that.player.y = new_player_bottom_loc - that.player.height;
-                        GameParams.gravity = GameParams.startGravity;
+                        //GameParams.gravity = GameParams.startGravity;
                         that.player.isFalling = false;
                     } else {
 
-                        that.player.y = that.player.y + GameParams.gravity++;
+                        that.player.y = that.player.y + GameParams.gravity;
                         that.player.isFalling = true;
                     }
                 }
@@ -184,6 +189,11 @@ var TheIncredibleStory = Class.create({
 
     },
 
+    resetGravity: function() {
+
+        GameParams.gravity = GameParams.startGravity;
+    },
+
     interractWithTile: function (tile) {
 
 
@@ -192,17 +202,65 @@ var TheIncredibleStory = Class.create({
             var player = this.player;
             player.isInterracting = true;
 
-            player.tl.moveTo(player.x, player.y - 500, 5).then(function () {
+
+            var sprite = new Sprite(32, 32);
+            sprite.image = this.game.assets["assets/graphics/levelTiles.png"];
+            sprite.frame = [11, 11, 11, 12, 12, 12, 13, 13, 13, 14, 14, 14];
+            sprite.x = player.x + player.width / 2;
+            sprite.y = player.y + player.height - sprite.height;
+            this.currentLevelScene.addChild(sprite);
+            var that = this;
+
+            player.tl.moveTo(player.x, player.y - 800, 10).then(function () {
                 player.isInterracting = false;
                 player.morph = null;
             });
+
+            setTimeout(function () {
+                that.currentLevelScene.removeChild(sprite);
+            }, 3000);
+
         } else if (tileIsRift && this.player.morph === GameParams.ladderMorph) {
 
 
             var player = this.player;
             player.isInterracting = true;
 
-            var 
+            var map = new Map(32, 32);
+            map.image = this.game.assets["assets/graphics/levelTiles.png"];
+            map.loadData([
+                [16],
+                [15],
+                [15],
+                [15],
+                [15],
+                [15],
+                [15]
+            ]);
+            map.collisionData = [
+                [1],
+                [1],
+                [1],
+                [1],
+                [1],
+                [1],
+                [1]
+
+            ];
+            map.x = player.x + player.width / 2;
+            map.y = player.y + player.height - map.height;
+            this.activeLadderSprite = map;
+            this.currentLevelScene.addChild(map);
+            GameParams.gravity = 0;
+            var that = this;
+            setTimeout(function () {
+
+                that.currentLevelScene.removeChild(map);
+                player.isInterracting = false;
+                player.morph = null;
+                GameParams.gravity = GameParams.startGravity;
+            }, 3000);
+
 
         } else if (tileIsRift && this.player.morph === GameParams.drillMorph) {
 
@@ -228,6 +286,20 @@ var TheIncredibleStory = Class.create({
 
             this.player.morph = GameParams.springMorph;
             console.log("morph 3");
+        } else if (event.keyCode === 32) { // spacebar
+
+            if (this.player.y - GameParams.jumpHeight < 0 || this.player.isFalling === true) {
+                return;
+            }
+
+            if (this.player.isJumping === true) {
+                return;
+            }
+            var new_y = this.player.y - GameParams.jumpHeight;
+            this.player.isJumping = true;
+            this.player.jumpYPerFrame = (new_y - this.player.y) / 5;
+            this.player.jumpToY = new_y;
+
         }
 
     }
