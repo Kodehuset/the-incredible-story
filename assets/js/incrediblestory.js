@@ -189,7 +189,7 @@ var TheIncredibleStory = Class.create({
 
     },
 
-    resetGravity: function() {
+    resetGravity: function () {
 
         GameParams.gravity = GameParams.startGravity;
     },
@@ -258,12 +258,41 @@ var TheIncredibleStory = Class.create({
                 that.currentLevelScene.removeChild(map);
                 player.isInterracting = false;
                 player.morph = null;
-                GameParams.gravity = GameParams.startGravity;
+                that.resetGravity();
             }, 3000);
 
 
         } else if (tileIsRift && this.player.morph === GameParams.drillMorph) {
 
+            var player = this.player;
+            player.isInterracting = true;
+
+
+            var pit_sprite = new Sprite(32, 32);
+            pit_sprite.image = this.game.assets["assets/graphics/levelTiles.png"];
+            pit_sprite.frame = [0];
+
+            var pit_x = Math.round(player.x / 32) * 32;
+            var pit_y = Math.round((player.y + player.height) / 32) * 32;
+            pit_sprite.x = pit_x;
+            pit_sprite.y = pit_y;
+            this.currentLevelScene.addChild(pit_sprite);
+            var that = this;
+
+
+            var new_y = player.y + player.height + 32;
+            while (that.currentLevelScene.collides(pit_x + 16, new_y)) {
+                new_y++;
+            }
+
+            player.moveTo(pit_x + 16, new_y);
+
+            setTimeout(function () {
+
+                player.isInterracting = false;
+                player.morph = null;
+                that.currentLevelScene.removeChild(pit_sprite);
+            }, 3000);
         }
     },
 
