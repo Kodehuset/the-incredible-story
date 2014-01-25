@@ -16,6 +16,7 @@ var GameParams = {
 var TheIncredibleStory = Class.create({
     game: null,
     player: null,
+    currentLevelScene: null,
     initialize: function () {
 
         this.game = new Core(1280, 720);
@@ -35,6 +36,7 @@ var TheIncredibleStory = Class.create({
         this.game.onload = function () {
 
             var levelOne = new LevelScene();
+            that.currentLevelScene = levelOne;
             levelOne.init("level1");
 
             that.player = new Sprite(32, 64);
@@ -159,11 +161,11 @@ var TheIncredibleStory = Class.create({
                         }
 
                         that.player.y = new_player_bottom_loc - that.player.height;
-                        GameParams.gravity = GameParams.startGravity;
+                        //GameParams.gravity = GameParams.startGravity;
                         that.player.isFalling = false;
                     } else {
 
-                        that.player.y = that.player.y + GameParams.gravity++;
+                        that.player.y = that.player.y + GameParams.gravity;
                         that.player.isFalling = true;
                     }
                 }
@@ -202,7 +204,33 @@ var TheIncredibleStory = Class.create({
             var player = this.player;
             player.isInterracting = true;
 
-            var 
+            var map = new Map(32, 32);
+            map.image = this.game.assets["assets/graphics/levelTiles.png"];
+            map.loadData([
+                [2],
+                [2],
+                [2],
+                [2]
+            ]);
+            map.collisionData = [
+                [1],
+                [1],
+                [1],
+                [1]
+            ];
+            map.x = player.x + player.width / 2;
+            map.y = player.y + player.height - map.height;
+            this.currentLevelScene.addChild(map);
+            GameParams.gravity = 0;
+            var that = this;
+            setTimeout(function () {
+
+                that.currentLevelScene.removeChild(map);
+                player.isInterracting = false;
+                player.morph = null;
+                GameParams.gravity = GameParams.startGravity;
+            }, 3000);
+
 
         } else if (tileIsRift && this.player.morph === GameParams.drillMorph) {
 
