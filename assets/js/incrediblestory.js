@@ -17,6 +17,7 @@ var TheIncredibleStory = Class.create({
     game: null,
     player: null,
     currentLevelScene: null,
+    activeLadderSprite: null,
     initialize: function () {
 
         this.game = new Core(1280, 720);
@@ -47,6 +48,7 @@ var TheIncredibleStory = Class.create({
 
             that.game.addEventListener(Event.RIGHT_BUTTON_DOWN, function () {
 
+                that.resetGravity();
                 if (that.player.x + that.player.image.width + GameParams.horizontalMoveInterval > levelOne.levelSprite.width) {
                     return;
                 }
@@ -74,6 +76,7 @@ var TheIncredibleStory = Class.create({
 
             that.game.addEventListener(Event.LEFT_BUTTON_DOWN, function () {
 
+                that.resetGravity();
                 if (that.player.x - GameParams.horizontalMoveInterval < 0) {
                     return;
                 }
@@ -99,6 +102,16 @@ var TheIncredibleStory = Class.create({
 
             that.game.addEventListener(Event.UP_BUTTON_UP, function () {
 
+
+                var player = that.player;
+                if (player.morph === GameParams.ladderMorph) {
+                    if (that.activeLadderSprite.within(player) === true) {
+                        GameParams.gravity = 0;
+                        player.y -= GameParams.horizontalMoveInterval;
+                    } else {
+                        that.resetGravity();
+                    }
+                }
 
             });
 
@@ -176,6 +189,11 @@ var TheIncredibleStory = Class.create({
 
     },
 
+    resetGravity: function() {
+
+        GameParams.gravity = GameParams.startGravity;
+    },
+
     interractWithTile: function (tile) {
 
 
@@ -215,9 +233,13 @@ var TheIncredibleStory = Class.create({
                 [15],
                 [15],
                 [15],
+                [15],
+                [15],
                 [15]
             ]);
             map.collisionData = [
+                [1],
+                [1],
                 [1],
                 [1],
                 [1],
@@ -227,6 +249,7 @@ var TheIncredibleStory = Class.create({
             ];
             map.x = player.x + player.width / 2;
             map.y = player.y + player.height - map.height;
+            this.activeLadderSprite = map;
             this.currentLevelScene.addChild(map);
             GameParams.gravity = 0;
             var that = this;
