@@ -18,6 +18,8 @@ var TheIncredibleStory = Class.create({
     player: null,
     currentLevelScene: null,
     activeLadderSprite: null,
+    introScene: null,
+    introSlides: [],
     initialize: function () {
 
         this.game = new Core(1280, 720);
@@ -29,13 +31,19 @@ var TheIncredibleStory = Class.create({
         this.game.preload("assets/graphics/middleTiles.png");
         this.game.preload("assets/graphics/backgroundTiles.png");
         this.game.preload("assets/graphics/player.png");
+        this.game.preload("assets/graphics/opening1.gif");
+        this.game.preload("assets/graphics/opening2.gif");
+        this.game.preload("assets/graphics/opening3.gif");
+        this.game.preload("assets/graphics/opening4.gif");
+        this.game.preload("assets/graphics/opening5.gif");
 
-        this.game.rootScene.backgroundColor = "blue";
+        this.game.rootScene.backgroundColor = "black";
         this.game.fps = 30;
 
         var windowWidth = $(window).width();
         var that = this;
         this.game.onload = function () {
+
 
             var levelOne = new LevelScene();
             that.currentLevelScene = levelOne;
@@ -203,8 +211,62 @@ var TheIncredibleStory = Class.create({
 
             });
 
-            that.game.pushScene(levelOne);
+            if (that.playIntro !== false) {
+
+                if (that.playInto !== false) {
+
+                    that.introScene = new Scene();
+
+                    var slide1 = new Sprite(that.game.width, that.game.height);
+                    slide1.image = that.game.assets["assets/graphics/opening1.gif"];
+                    slide1.opacity = 0;
+
+                    var slide2 = new Sprite(that.game.width, that.game.height);
+                    slide2.image = that.game.assets["assets/graphics/opening2.gif"];
+                    slide2.opacity = 0;
+
+                    var slide3 = new Sprite(that.game.width, that.game.height);
+                    slide3.image = that.game.assets["assets/graphics/opening3.gif"];
+                    slide3.opacity = 0;
+
+                    var slide4 = new Sprite(that.game.width, that.game.height);
+                    slide4.image = that.game.assets["assets/graphics/opening4.gif"];
+                    slide4.opacity = 0;
+
+                    var slide5 = new Sprite(that.game.width, that.game.height);
+                    slide5.image = that.game.assets["assets/graphics/opening5.gif"];
+
+                    that.introSlides = [slide1, slide2, slide3, slide4, slide5];
+                    that.introScene.addChild(slide1);
+
+                    slide1.tl.fadeIn(30).delay(90).fadeOut(30).then(function () {
+                        that.introScene.addChild(slide2);
+                        slide2.tl.fadeIn(30).delay(90).fadeOut(30).then(function () {
+                            that.introScene.addChild(slide3);
+                            slide3.tl.fadeIn(30).delay(90).fadeOut(10).then(function () {
+                                that.introScene.addChild(slide4);
+                                slide4.tl.fadeIn(10).delay(30).then(function () {
+                                    that.introScene.addChild(slide5);
+                                    slide5.tl.delay(90).then(function () {
+                                        that.introScene.removeChild(slide5);
+                                        slide4.tl.delay(60).fadeOut(30).then(function () {
+                                            that.game.pushScene(levelOne);
+                                        });
+                                    });
+                                });
+                            });
+                        });
+                    });
+
+                }
+
+                that.game.pushScene(that.introScene);
+            } else {
+
+                that.game.pushScene(levelOne);
+            }
         };
+
 
         this.game.scale = windowWidth / this.game.width;
 
@@ -334,7 +396,9 @@ var TheIncredibleStory = Class.create({
 
     run: function () {
 
-        this.game.start();
+        var that = this;
+        that.game.start();
+
     },
 
     keyUp: function (event) {
