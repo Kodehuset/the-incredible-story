@@ -3,9 +3,10 @@ var LevelScene = Class.create(Scene, {
     backgroundSprite: null,
     middleSprite: null,
     levelSprite: null,
+    interractSprite: null,
 
     init: function (level) {
-        var game, levelMap, collisionData, middleMap, backgroundMap;
+        var game, levelMap, collisionData, middleMap, backgroundMap, interractMap, interractCollisionData;
 
         Scene.apply(this);
 
@@ -40,6 +41,18 @@ var LevelScene = Class.create(Scene, {
         this.addChild(this.levelSprite);
 
 
+        // Interract sprite
+        this.interractSprite = new Map(32, 32);
+        this.interractSprite.image = game.assets["assets/graphics/levelTiles.png"];
+
+        interractMap = eval(game.assets["assets/graphics/" + level + "/interract.map"]);
+        interractCollisionData = eval(game.assets["assets/graphics/" + level + "/interract_collision.map"]);
+        this.interractSprite.collisionData = interractCollisionData;
+        this.interractSprite.loadData(interractMap);
+
+        this.addChild(this.interractSprite);
+
+
     },
 
     getPlayerStartY: function () {
@@ -54,8 +67,8 @@ var LevelScene = Class.create(Scene, {
         }
     },
 
-    getLevelWidth: function() {
-      return this.levelSprite.width;
+    getLevelWidth: function () {
+        return this.levelSprite.width;
     },
 
     collides: function (x, y) {

@@ -1,4 +1,13 @@
 enchant();
+var GameParams = {
+    jumpHeight: 75,
+    horizontalMoveInterval: 25,
+    gravity: 10,
+    startGravity: 10,
+    playfieldPushDistance: 300
+
+};
+
 var TheIncredibleStory = Class.create({
     game: null,
     player: null,
@@ -9,6 +18,8 @@ var TheIncredibleStory = Class.create({
         this.game.preload("assets/graphics/level1/middle.map");
         this.game.preload("assets/graphics/level1/background.map");
         this.game.preload("assets/graphics/level1/collision.map");
+        this.game.preload("assets/graphics/level1/interract.map");
+        this.game.preload("assets/graphics/level1/interract_collision.map");
         this.game.preload("assets/graphics/levelTiles.png");
         this.game.preload("assets/graphics/middleTiles.png");
         this.game.preload("assets/graphics/backgroundTiles.png");
@@ -30,15 +41,18 @@ var TheIncredibleStory = Class.create({
 
             that.game.addEventListener(Event.RIGHT_BUTTON_DOWN, function () {
 
-
-                if (that.player.x + that.player.image.width + 10 > levelOne.levelSprite.width) {
+                if (that.player.x + that.player.image.width + GameParams.horizontalMoveInterval > levelOne.levelSprite.width) {
                     return;
                 }
 
-                var new_x = that.player.x + 10;
-                if (levelOne.collides(new_x + that.player.width, that.player.y) === false) {
-                    that.player.x = new_x;
+                if (that.player.isMoving === true) {
+                    return;
                 }
+
+                var new_x = that.player.x + GameParams.horizontalMoveInterval;
+                that.player.moveXPerFrame = (new_x - that.player.x) / 5;
+                that.player.moveToX = new_x;
+                that.player.isMoving = true;
 
                 if (that.player.x > that.game.width - 300 && (Math.abs(levelOne.x) + that.game.width < levelOne.getLevelWidth())) {
                     levelOne.x -= 10;
@@ -47,41 +61,104 @@ var TheIncredibleStory = Class.create({
 
             });
 
+            that.game.addEventListener(Event.RIGHT_BUTTON_UP, function () {
+                that.player.isMoving = false;
+            });
+
             that.game.addEventListener(Event.LEFT_BUTTON_DOWN, function () {
 
-                if (that.player.x - 10 < 0) {
+                if (that.player.x - GameParams.horizontalMoveInterval < 0) {
                     return;
                 }
 
-                var new_x = that.player.x - 10;
-                if (levelOne.collides(new_x - that.player.width, that.player.y) === false) {
-                    that.player.x = new_x;
+                if (that.player.isMoving === true) {
+                    return;
                 }
+
+                var new_x = (that.player.x - GameParams.horizontalMoveInterval);
+                that.player.moveXPerFrame = -1 * (that.player.x - new_x) / 5;
+                that.player.moveToX = new_x;
+                that.player.isMoving = true;
 
                 if (that.player.x < Math.abs(levelOne.x) + 300 && levelOne.x < 0) {
                     levelOne.x += 10;
                 }
             });
 
-            that.game.addEventListener(Event.UP_BUTTON_DOWN, function () {
+            that.game.addEventListener(Event.LEFT_BUTTON_UP, function () {
+                that.player.isMoving = false;
+            });
 
-                if (that.player.y - 10 < 0) {
+            that.game.addEventListener(Event.UP_BUTTON_UP, function () {
+                if (that.player.y - GameParams.jumpHeight < 0 || that.player.isFalling === true) {
                     return;
                 }
 
-                var new_y = that.player.y - 50;
-                if (levelOne.collides(that.player.x, new_y - that.player.height) === false && !that.player.isJumping) {
-                    var original_y = that.player.y;
-                    that.player.isJumping = true;
-                    that.player.tl.moveTo(that.player.x, new_y, 5).then(function () {
+                if (that.player.isJumping === true) {
+                    return;
+                }
+                var new_y = that.player.y - GameParams.jumpHeight;
+                that.player.isJumping = true;
+                that.player.jumpYPerFrame = (new_y - that.player.y) / 5;
+                that.player.jumpToY = new_y;
 
-                        that.player.tl.moveTo(that.player.x, original_y, 5).then(function () {
+
+            });
+
+
+            that.game.addEventListener(Event.ENTER_FRAME, function () {
+
+
+                if (that.player.isJumping) {
+
+                    var new_y = that.player.y + that.player.jumpYPerFrame;
+                    if (levelOne.collides(that.player.x, new_y)) {
+                        that.player.isJumping = false; // done jumping - we've hit something
+                    } else {
+
+                        that.player.y += that.player.jumpYPerFrame;
+                        if (that.player.y === that.player.jumpToY) {
                             that.player.isJumping = false;
-                        });
-
-                    });
+                        }
+                    }
                 }
 
+                if (that.player.isMoving) {
+
+
+                    var new_x = that.player.x + that.player.moveXPerFrame;
+
+                    if (levelOne.collides(new_x + that.player.width, that.player.y) === true) {
+                        that.player.isMoving = false;
+                    } else if (new_x < 0) {
+                        that.player.x = 0;
+                    } else if (new_x + that.player.width > levelOne.getLevelWidth()) {
+                        that.player.x = levelOne.getLevelWidth() - that.player.width;
+                    } else {
+                        that.player.x += that.player.moveXPerFrame;
+                    }
+                }
+
+
+                var new_player_bottom_loc = that.player.y + that.player.height + (GameParams.gravity);
+                if (that.player.isJumping) {
+                    return;
+                } else if (levelOne.collides(that.player.x, new_player_bottom_loc) === true) {
+
+                    new_player_bottom_loc--;
+                    while (levelOne.collides(that.player.x, new_player_bottom_loc) === true) {
+                        new_player_bottom_loc--;
+                    }
+
+                    that.player.y = new_player_bottom_loc - that.player.height;
+                    GameParams.gravity = GameParams.startGravity;
+                    that.player.isFalling = false;
+                    return;
+                } else {
+
+                    that.player.y = that.player.y + GameParams.gravity++;
+                    that.player.isFalling = true;
+                }
 
             });
 
