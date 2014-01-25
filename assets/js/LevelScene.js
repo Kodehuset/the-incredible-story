@@ -66,5 +66,10 @@ var LevelScene = Class.create(Scene, {
     stepsOnTile: function (player) {
 
         return this.levelSprite.checkTile(player.x + (player.width / 2), player.y + player.height + 2);
+    },
+
+    nextToTile: function (player) {
+        return this.levelSprite.checkTile(player.x + 48, player.y + 48);
     }
+
 });

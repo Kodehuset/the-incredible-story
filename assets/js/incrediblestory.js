@@ -6,11 +6,10 @@ var GameParams = {
     startGravity: 15,
     playfieldPushDistance: 300,
     playfieldPushInterval: 10,
-    riftTile: 10,
     ladderMorph: 1,
     drillMorph: 2,
-    springMorph: 3
-
+    springMorph: 3,
+    dogSprite: 17
 };
 
 var TheIncredibleStory = Class.create({
@@ -209,6 +208,14 @@ var TheIncredibleStory = Class.create({
                     that.interractWithTile(interractionTile);
                 }
 
+                var alignedTile = levelOne.nextToTile(that.player);
+                if(alignedTile === GameParams.dogSprite) {
+
+                    that.completeGame();
+                }
+
+
+
             });
 
             if (that.playIntro !== false) {
@@ -285,6 +292,21 @@ var TheIncredibleStory = Class.create({
 
         gameOverScene.addChild(label);
         this.game.pushScene(gameOverScene);
+    },
+
+    completeGame: function() {
+
+        this.game.popScene();
+        var completeGameScene = new Scene(this.game.width, this.game.height);
+        completeGameScene.backgroundColor = "white";
+        var label = new Label();
+        label.text = "You made it!";
+        label.textAlign = "center";
+        label.x = (this.game.width / 2) - (label.width / 2);
+        label.y = (this.game.height / 2) - (label.height / 2);
+
+        completeGameScene.addChild(label);
+        this.game.pushScene(completeGameScene);
     },
 
     resetGravity: function () {
