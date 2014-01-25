@@ -4,7 +4,7 @@ var GameParams = {
     horizontalMoveInterval: 40,
     gravity: 15,
     startGravity: 15,
-    playfieldPushDistance: 400,
+    playfieldPushDistance: 300,
     playfieldPushInterval: 10,
     riftTile: 10,
     ladderMorph: 1,
@@ -43,20 +43,24 @@ var TheIncredibleStory = Class.create({
 
             that.player = new Sprite(32, 64);
             that.player.image = that.game.assets["assets/graphics/player.png"];
+            that.player.frame = [0, 0, 0, 1, 1, 1];
+            that.player.direction = 1;
             that.player.y = levelOne.getPlayerStartY() - that.player.image.height;
             levelOne.addChild(that.player);
 
             that.game.addEventListener(Event.RIGHT_BUTTON_DOWN, function () {
 
                 that.resetGravity();
+
+                if (that.player.direction !== 1) {
+                    that.player.tl.scaleTo(1, 1, 2);
+                    that.player.direction = 1;
+                }
+
                 if (that.player.x + that.player.image.width + GameParams.horizontalMoveInterval > levelOne.levelSprite.width) {
                     return;
                 }
 
-
-                if (that.player.x > that.game.width - GameParams.playfieldPushDistance && (Math.abs(levelOne.x) + that.game.width < levelOne.getLevelWidth())) {
-                    levelOne.x -= GameParams.playfieldPushInterval;
-                }
 
                 if (that.player.isMoving === true) {
                     return;
@@ -77,12 +81,15 @@ var TheIncredibleStory = Class.create({
             that.game.addEventListener(Event.LEFT_BUTTON_DOWN, function () {
 
                 that.resetGravity();
-                if (that.player.x - GameParams.horizontalMoveInterval < 0) {
-                    return;
+
+
+                if (that.player.direction !== -1) {
+                    that.player.tl.scaleTo(-1, 1, 2);
+                    that.player.direction = -1;
                 }
 
-                if (that.player.x < Math.abs(levelOne.x) + GameParams.playfieldPushDistance && levelOne.x < 0) {
-                    levelOne.x += GameParams.playfieldPushInterval;
+                if (that.player.x - GameParams.horizontalMoveInterval < 0) {
+                    return;
                 }
 
                 if (that.player.isMoving === true) {
@@ -146,8 +153,15 @@ var TheIncredibleStory = Class.create({
                         that.player.x = levelOne.getLevelWidth() - that.player.width;
                     } else {
                         that.player.x += that.player.moveXPerFrame;
-                    }
 
+                        var distanceFromLeftEdge = that.player.x - Math.abs(levelOne.x);
+                        var distanceFromRightEdge = levelOne.getLevelWidth() - that.game.width - that.player.x;
+                        if (distanceFromRightEdge < GameParams.playfieldPushDistance && (Math.abs(levelOne.x) + that.game.width < levelOne.getLevelWidth())) {
+                            levelOne.x -= that.player.moveXPerFrame;
+                        } else if (distanceFromLeftEdge < GameParams.playfieldPushDistance && levelOne.x < 0) {
+                            levelOne.x -= that.player.moveXPerFrame;
+                        }
+                    }
 
                 }
 
@@ -189,7 +203,7 @@ var TheIncredibleStory = Class.create({
 
     },
 
-    resetGravity: function() {
+    resetGravity: function () {
 
         GameParams.gravity = GameParams.startGravity;
     },
@@ -197,7 +211,7 @@ var TheIncredibleStory = Class.create({
     interractWithTile: function (tile) {
 
 
-        var tileIsRift = tile === GameParams.riftTile;
+        var tileIsRift = tile === 9 || tile === 10;
         if (tileIsRift && this.player.morph === GameParams.springMorph) {
             var player = this.player;
             player.isInterracting = true;
@@ -258,12 +272,41 @@ var TheIncredibleStory = Class.create({
                 that.currentLevelScene.removeChild(map);
                 player.isInterracting = false;
                 player.morph = null;
-                GameParams.gravity = GameParams.startGravity;
+                that.resetGravity();
             }, 3000);
 
 
         } else if (tileIsRift && this.player.morph === GameParams.drillMorph) {
 
+            var player = this.player;
+            player.isInterracting = true;
+
+
+            var pit_sprite = new Sprite(32, 32);
+            pit_sprite.image = this.game.assets["assets/graphics/levelTiles.png"];
+            pit_sprite.frame = [0];
+
+            var pit_x = Math.round(player.x / 32) * 32;
+            var pit_y = Math.round((player.y + player.height) / 32) * 32;
+            pit_sprite.x = pit_x;
+            pit_sprite.y = pit_y;
+            this.currentLevelScene.addChild(pit_sprite);
+            var that = this;
+
+
+            var new_y = player.y + player.height + 32;
+            while (that.currentLevelScene.collides(pit_x + 16, new_y)) {
+                new_y++;
+            }
+
+            player.moveTo(pit_x + 16, new_y);
+
+            setTimeout(function () {
+
+                player.isInterracting = false;
+                player.morph = null;
+                that.currentLevelScene.removeChild(pit_sprite);
+            }, 3000);
         }
     },
 
