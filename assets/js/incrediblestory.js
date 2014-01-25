@@ -316,6 +316,7 @@ var TheIncredibleStory = Class.create({
 
             setTimeout(function () {
                 that.currentLevelScene.removeChild(sprite);
+                that.player.frame = [0,0,0,1,1,1];
             }, 3000);
 
         } else if (tileIsRift && this.player.morph === GameParams.ladderMorph) {
@@ -357,6 +358,7 @@ var TheIncredibleStory = Class.create({
                 player.isInterracting = false;
                 player.morph = null;
                 that.resetGravity();
+                that.player.frame = [0,0,0,1,1,1];
             }, 3000);
 
 
@@ -390,6 +392,7 @@ var TheIncredibleStory = Class.create({
                 player.isInterracting = false;
                 player.morph = null;
                 that.currentLevelScene.removeChild(pit_sprite);
+                that.player.frame = [0,0,0,1,1,1];
             }, 3000);
         }
     },
@@ -406,15 +409,15 @@ var TheIncredibleStory = Class.create({
         if (event.keyCode === 49) { // 1
 
             this.player.morph = GameParams.ladderMorph;
-            console.log("morph 1");
+            this.player.frame = [2,2,2,3,3,3];
         } else if (event.keyCode === 50) { // 2
 
             this.player.morph = GameParams.drillMorph;
-            console.log("morph 2");
+            this.player.frame = [4,4,4,5,5,5];
         } else if (event.keyCode === 51) { // 3
 
             this.player.morph = GameParams.springMorph;
-            console.log("morph 3");
+            this.player.frame = [6,6,6,7,7,7];
         } else if (event.keyCode === 32) { // spacebar
 
             if (this.player.y - GameParams.jumpHeight < 0 || this.player.isFalling === true) {
