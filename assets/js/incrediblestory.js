@@ -4,7 +4,7 @@ var GameParams = {
     horizontalMoveInterval: 40,
     gravity: 15,
     startGravity: 15,
-    playfieldPushDistance: 400,
+    playfieldPushDistance: 300,
     playfieldPushInterval: 10,
     riftTile: 10,
     ladderMorph: 1,
@@ -49,14 +49,11 @@ var TheIncredibleStory = Class.create({
             that.game.addEventListener(Event.RIGHT_BUTTON_DOWN, function () {
 
                 that.resetGravity();
+
                 if (that.player.x + that.player.image.width + GameParams.horizontalMoveInterval > levelOne.levelSprite.width) {
                     return;
                 }
 
-
-                if (that.player.x > that.game.width - GameParams.playfieldPushDistance && (Math.abs(levelOne.x) + that.game.width < levelOne.getLevelWidth())) {
-                    levelOne.x -= GameParams.playfieldPushInterval;
-                }
 
                 if (that.player.isMoving === true) {
                     return;
@@ -77,12 +74,10 @@ var TheIncredibleStory = Class.create({
             that.game.addEventListener(Event.LEFT_BUTTON_DOWN, function () {
 
                 that.resetGravity();
+
+
                 if (that.player.x - GameParams.horizontalMoveInterval < 0) {
                     return;
-                }
-
-                if (that.player.x < Math.abs(levelOne.x) + GameParams.playfieldPushDistance && levelOne.x < 0) {
-                    levelOne.x += GameParams.playfieldPushInterval;
                 }
 
                 if (that.player.isMoving === true) {
@@ -146,8 +141,15 @@ var TheIncredibleStory = Class.create({
                         that.player.x = levelOne.getLevelWidth() - that.player.width;
                     } else {
                         that.player.x += that.player.moveXPerFrame;
-                    }
 
+                        var distanceFromLeftEdge = that.player.x - Math.abs(levelOne.x);
+                        var distanceFromRightEdge = levelOne.getLevelWidth() - that.game.width - that.player.x;
+                        if (distanceFromRightEdge < GameParams.playfieldPushDistance && (Math.abs(levelOne.x) + that.game.width < levelOne.getLevelWidth())) {
+                            levelOne.x -= that.player.moveXPerFrame;
+                        } else if (distanceFromLeftEdge < GameParams.playfieldPushDistance && levelOne.x < 0) {
+                            levelOne.x -= that.player.moveXPerFrame;
+                        }
+                    }
 
                 }
 
