@@ -1151,6 +1151,9 @@ enchant.EventTarget = enchant.Class.create({
                     var evt = new enchant.Event(enchant.Event.TOUCH_START);
                     evt._initPosition(e.pageX, e.pageY);
                     var target = core.currentScene._determineEventTarget(evt);
+                    if(!core._touchEventTarget) {
+                        return;
+                    }
                     core._touchEventTarget[core._mousedownID] = target;
                     target.dispatchEvent(evt);
                 }, false);
@@ -1158,6 +1161,9 @@ enchant.EventTarget = enchant.Class.create({
                     var core = enchant.Core.instance;
                     var evt = new enchant.Event(enchant.Event.TOUCH_MOVE);
                     evt._initPosition(e.pageX, e.pageY);
+                    if(!core._touchEventTarget) {
+                        return;
+                    }
                     var target = core._touchEventTarget[core._mousedownID];
                     if (target) {
                         target.dispatchEvent(evt);
@@ -1167,6 +1173,9 @@ enchant.EventTarget = enchant.Class.create({
                     var core = enchant.Core.instance;
                     var evt = new enchant.Event(enchant.Event.TOUCH_END);
                     evt._initPosition(e.pageX, e.pageY);
+                    if(!core._touchEventTarget) {
+                        return;
+                    }
                     var target = core._touchEventTarget[core._mousedownID];
                     if (target) {
                         target.dispatchEvent(evt);
