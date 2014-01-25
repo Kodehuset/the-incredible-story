@@ -419,7 +419,7 @@ var TheIncredibleStory = Class.create({
 
             var pit_sprite = new Sprite(32, 32);
             pit_sprite.image = this.game.assets["assets/graphics/levelTiles.png"];
-            pit_sprite.frame = [0];
+            pit_sprite.frame = [19];
 
             var pit_x = Math.round(player.x / 32) * 32;
             var pit_y = Math.round((player.y + player.height) / 32) * 32;
