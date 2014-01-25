@@ -187,6 +187,13 @@ var TheIncredibleStory = Class.create({
                     }
                 }
 
+
+                if (that.player.y + that.player.height >= that.game.height) {
+                    that.gameOver();
+                    return;
+                }
+
+
                 var interractionTile = levelOne.stepsOnTile(that.player);
 
                 if (interractionTile != -1 && that.player.isInterracting !== true) {
@@ -201,6 +208,21 @@ var TheIncredibleStory = Class.create({
 
         this.game.scale = windowWidth / this.game.width;
 
+    },
+
+    gameOver: function () {
+
+        this.game.popScene();
+        var gameOverScene = new Scene(this.game.width, this.game.height);
+        gameOverScene.backgroundColor = "white";
+        var label = new Label();
+        label.text = "Game over!";
+        label.textAlign = "center";
+        label.x = (this.game.width / 2) - (label.width / 2);
+        label.y = (this.game.height / 2) - (label.height / 2);
+
+        gameOverScene.addChild(label);
+        this.game.pushScene(gameOverScene);
     },
 
     resetGravity: function () {
