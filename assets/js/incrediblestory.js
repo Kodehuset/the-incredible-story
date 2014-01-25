@@ -43,12 +43,19 @@ var TheIncredibleStory = Class.create({
 
             that.player = new Sprite(32, 64);
             that.player.image = that.game.assets["assets/graphics/player.png"];
+            that.player.frame = [0, 0, 0, 1, 1, 1];
+            that.player.direction = 1;
             that.player.y = levelOne.getPlayerStartY() - that.player.image.height;
             levelOne.addChild(that.player);
 
             that.game.addEventListener(Event.RIGHT_BUTTON_DOWN, function () {
 
                 that.resetGravity();
+
+                if (that.player.direction !== 1) {
+                    that.player.tl.scaleTo(1, 1, 2);
+                    that.player.direction = 1;
+                }
 
                 if (that.player.x + that.player.image.width + GameParams.horizontalMoveInterval > levelOne.levelSprite.width) {
                     return;
@@ -75,6 +82,11 @@ var TheIncredibleStory = Class.create({
 
                 that.resetGravity();
 
+
+                if (that.player.direction !== -1) {
+                    that.player.tl.scaleTo(-1, 1, 2);
+                    that.player.direction = -1;
+                }
 
                 if (that.player.x - GameParams.horizontalMoveInterval < 0) {
                     return;
