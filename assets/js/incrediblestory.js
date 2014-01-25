@@ -194,11 +194,18 @@ var TheIncredibleStory = Class.create({
 
             player.tl.moveTo(player.x, player.y - 500, 5).then(function () {
                 player.isInterracting = false;
+                player.morph = null;
             });
         } else if (tileIsRift && this.player.morph === GameParams.ladderMorph) {
 
+
+            var player = this.player;
+            player.isInterracting = true;
+
+            var 
+
         } else if (tileIsRift && this.player.morph === GameParams.drillMorph) {
-            
+
         }
     },
 
