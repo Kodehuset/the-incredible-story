@@ -9,7 +9,7 @@ var GameParams = {
     ladderMorph: 1,
     drillMorph: 2,
     springMorph: 3,
-    dogSprite: 17,
+    dogSprite: 23,
     playerMoveAnimation: [0, 0, 0, 1, 1, 1],
     playerStopAnimation: [0],
     backgroundColor: "#69c1fb"
