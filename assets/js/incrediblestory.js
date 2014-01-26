@@ -281,7 +281,7 @@ var TheIncredibleStory = Class.create({
                     that.player.x += that.player.moveXPerFrame;
 
                     var distanceFromLeftEdge = that.player.x - Math.abs(levelOne.x);
-                    var distanceFromRightEdge = that.game.width - that.player.x / that.game.width  * that.game.width;
+                    var distanceFromRightEdge = that.game.width - that.player.x / that.game.width * that.game.width;
                     //console.log("distanceFromLeftEdge: ", distanceFromLeftEdge);
                     if (distanceFromRightEdge < GameParams.playfieldPushDistance && (Math.abs(levelOne.x) + that.game.width < levelOne.getLevelWidth())) {
                         levelOne.x -= that.player.moveXPerFrame;
@@ -401,7 +401,7 @@ var TheIncredibleStory = Class.create({
             var that = this;
 
             var target_y = player.y;
-            while(!that.currentLevelScene.collides(player.x, target_y) && target_y > player.y - GameParams.springJumpHeight) {
+            while (!that.currentLevelScene.collides(player.x, target_y) && target_y > player.y - GameParams.springJumpHeight) {
                 console.log(target_y);
                 target_y -= 32;
             }
@@ -466,7 +466,12 @@ var TheIncredibleStory = Class.create({
 
             var pit_sprite = new Sprite(32, 32);
             pit_sprite.image = this.game.assets["assets/graphics/levelTiles.png"];
-            pit_sprite.frame = [19];
+            if (tile === 9) {
+                pit_sprite.frame = [20];
+            } else {
+                pit_sprite.frame = [19];
+            }
+
 
             var pit_x = Math.round(player.x / 32) * 32;
             var pit_y = Math.round((player.y + player.height) / 32) * 32;
