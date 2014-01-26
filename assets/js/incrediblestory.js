@@ -40,8 +40,10 @@ var TheIncredibleStory = Class.create({
         this.game.preload("assets/graphics/opening3.gif");
         this.game.preload("assets/graphics/opening4.gif");
         this.game.preload("assets/graphics/opening5.gif");
+        this.game.preload("assets/graphics/start1.gif");
+        this.game.preload("assets/graphics/end1.gif");
 
-        this.game.rootScene.backgroundColor = "black";
+        this.game.rootScene.backgroundColor = "#69c1fb";
         this.game.fps = 30;
 
         var windowWidth = $(window).width();
@@ -50,10 +52,7 @@ var TheIncredibleStory = Class.create({
 
             var gameMenu = new Scene();
             var menu = new Sprite(that.game.width, that.game.height);
-            var startGame = new Label("Press an arrow key to start");
-            startGame.width = 600;
-            startGame.textAlign = "center";
-            startGame._touchable = true;
+            menu.image = that.game.assets["assets/graphics/start1.gif"];
             window.addEventListener("click", function () {
                 if (that.game.currentScene !== gameMenu) {
                     return;
@@ -74,13 +73,7 @@ var TheIncredibleStory = Class.create({
                 }, 1000);
 
             });
-            startGame.font = "32px sans-serif";
-            startGame.color = "green";
-            startGame.x = (that.game.width / 2) - (startGame.width / 2);
-            startGame.y = 200;
             gameMenu.addChild(menu);
-            gameMenu.addChild(startGame);
-
 
             if (that.playIntro !== false) {
 
@@ -334,21 +327,16 @@ var TheIncredibleStory = Class.create({
 
     gameOver: function () {
 
-        var gameOverScene = new Scene(this.game.width, this.game.height);
-        gameOverScene.backgroundColor = "white";
-        var label = new Label();
-        label.text = "Game over!";
-        label.textAlign = "center";
-        label.x = (this.game.width / 2) - (label.width / 2);
-        label.y = (this.game.height / 2) - (label.height / 2);
-
-        gameOverScene.addChild(label);
+        var gameOverScene = new Scene();
+        var graphic = new Sprite(this.game.width, this.game.height);
+        graphic.image = this.game.assets["assets/graphics/end1.gif"];
+        gameOverScene.addChild(graphic);
         this.game.pushScene(gameOverScene);
         var that = this;
         setTimeout(function () {
             that.game.popScene();
             that.game.popScene();
-        }, 3000);
+        }, 5000);
     },
 
     completeGame: function () {
