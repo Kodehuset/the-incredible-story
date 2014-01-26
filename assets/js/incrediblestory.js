@@ -44,6 +44,9 @@ var TheIncredibleStory = Class.create({
         this.game.preload("assets/graphics/start1.gif");
         this.game.preload("assets/graphics/end1.gif");
         this.game.preload("assets/graphics/end2.gif");
+        this.game.preload("assets/graphics/morph_ladder_on.png");
+        this.game.preload("assets/graphics/morph_spring_on.png");
+        this.game.preload("assets/graphics/morph_trans_on.png");
 
         this.game.rootScene.backgroundColor = GameParams.backgroundColor;
         this.game.fps = 30;
@@ -278,6 +281,7 @@ var TheIncredibleStory = Class.create({
                     }
 
                     that.currentLevelScene.timeLabel.x = (Math.abs(levelOne.x) + that.game.width) - that.currentLevelScene.timeLabel.width - 20;
+                    that.currentLevelScene.abilityBar.x = (Math.abs(levelOne.x) + 20);
                 }
 
             }
