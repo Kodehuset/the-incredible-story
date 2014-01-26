@@ -2,6 +2,7 @@ enchant();
 var GameParams = {
     jumpHeight: 150,
     horizontalMoveInterval: 40,
+    verticalMoveInterval: 40,
     gravity: 15,
     startGravity: 15,
     playfieldPushDistance: 300,
@@ -179,8 +180,9 @@ var TheIncredibleStory = Class.create({
                 return;
             }
 
-            var new_x = that.player.x + GameParams.horizontalMoveInterval;
-            that.player.moveXPerFrame = (new_x - that.player.x) / 5;
+            var absolute_x = (that.player.x / 32) * 32;
+            var new_x = absolute_x + GameParams.horizontalMoveInterval;
+            that.player.moveXPerFrame = (new_x - absolute_x) / 5;
             that.player.moveToX = new_x;
             that.player.isMoving = true;
 
@@ -215,8 +217,9 @@ var TheIncredibleStory = Class.create({
                 return;
             }
 
-            var new_x = (that.player.x - GameParams.horizontalMoveInterval);
-            that.player.moveXPerFrame = -1 * (that.player.x - new_x) / 5;
+            var absolute_x = (that.player.x / 32) * 32;
+            var new_x = absolute_x - GameParams.horizontalMoveInterval;
+            that.player.moveXPerFrame = -1 * (absolute_x - new_x) / 5;
             that.player.moveToX = new_x;
             that.player.isMoving = true;
 
@@ -232,9 +235,12 @@ var TheIncredibleStory = Class.create({
 
             var player = that.player;
             if (player.morph === GameParams.ladderMorph) {
-                if (that.activeLadderSprite.within(player) === true) {
+                if (player.y + player.height > that.activeLadderSprite.y + 16 && player.x + player.width / 2 > that.activeLadderSprite.x && player.x + player.width / 2 < that.activeLadderSprite.x + that.activeLadderSprite.width) {
+                    console.log("climb");
                     GameParams.gravity = 0;
-                    player.y -= GameParams.horizontalMoveInterval;
+                    that.disableGravity = true;
+                    player.y -= GameParams.verticalMoveInterval;
+//                    player.isMoving = true;
                 } else {
                     that.resetGravity();
                 }
@@ -248,7 +254,7 @@ var TheIncredibleStory = Class.create({
             if (that.player.isJumping) {
 
                 var new_y = that.player.y + that.player.jumpYPerFrame;
-                if (levelOne.collides(that.player.x, new_y)) {
+                if (levelOne.collides(that.player.x + that.player.width / 2, new_y)) {
                     that.player.isJumping = false; // done jumping - we've hit something
                 } else {
 
@@ -264,7 +270,9 @@ var TheIncredibleStory = Class.create({
 
                 var new_x = that.player.x + that.player.moveXPerFrame;
 
+
                 if (levelOne.collides(new_x + that.player.width, that.player.y) === true) {
+                    that.player.x = Math.round(new_x / 32) * 32;
                     that.player.isMoving = false;
                 } else if (new_x < 0) {
                     that.player.x = 0;
@@ -281,6 +289,8 @@ var TheIncredibleStory = Class.create({
                         levelOne.x -= that.player.moveXPerFrame;
                     }
 
+                    // console.log("x=", that.player.x, ", y=", that.player.y);
+
                     that.currentLevelScene.timeLabel.x = (Math.abs(levelOne.x) + that.game.width) - that.currentLevelScene.timeLabel.width - 20;
                     that.currentLevelScene.abilityBar.x = (Math.abs(levelOne.x) + 20);
                 }
@@ -288,16 +298,19 @@ var TheIncredibleStory = Class.create({
             }
 
 
-            if (!that.player.isJumping) {
+            if (!that.player.isJumping && that.disableGravity !== true) {
 
-                var new_player_bottom_loc = that.player.y + that.player.height + (GameParams.gravity);
+                var new_player_bottom_loc = Math.round(that.player.y / 32) * 32 + that.player.height + (GameParams.gravity);
 
-                if (levelOne.collides(that.player.x, new_player_bottom_loc) === true) {
+                var player_x = Math.round(that.player.x / 32) * 32 + that.player.width / 2;
+                if (levelOne.collides(player_x, new_player_bottom_loc) === true) {
 
                     new_player_bottom_loc--;
-                    while (levelOne.collides(that.player.x, new_player_bottom_loc) === true) {
+                    while (levelOne.collides(player_x, new_player_bottom_loc) === true) {
                         new_player_bottom_loc--;
                     }
+
+                    //console.log("modified y=", new_player_bottom_loc, ", minus height=", new_player_bottom_loc - that.player.height);
 
                     that.player.y = new_player_bottom_loc - that.player.height;
                     that.player.isFalling = false;
@@ -370,6 +383,7 @@ var TheIncredibleStory = Class.create({
     resetGravity: function () {
 
         GameParams.gravity = GameParams.startGravity;
+        this.disableGravity = false;
     },
 
     interractWithTile: function (tile) {
@@ -425,7 +439,7 @@ var TheIncredibleStory = Class.create({
                 [1]
 
             ];
-            map.x = player.x + player.width / 2;
+            map.x = Math.round(player.x / 32) * 32;
             map.y = player.y + player.height - map.height;
             this.activeLadderSprite = map;
             this.currentLevelScene.addChild(map);
