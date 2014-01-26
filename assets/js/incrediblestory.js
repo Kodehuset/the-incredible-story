@@ -171,7 +171,9 @@ var TheIncredibleStory = Class.create({
                 that.player.direction = 1;
             }
 
-            if (that.player.x + that.player.image.width + GameParams.horizontalMoveInterval > levelOne.levelSprite.width) {
+
+            if (that.player.x + that.player.image.width > levelOne.getLevelWidth() + GameParams.playfieldPushDistance) {
+                //console.log("x=", that.player.x + that.player.image.width, ", levelWidth=", levelOne.getLevelWidth() + GameParams.playfieldPushDistance);
                 return;
             }
 
@@ -236,7 +238,6 @@ var TheIncredibleStory = Class.create({
             var player = that.player;
             if (player.morph === GameParams.ladderMorph) {
                 if (player.y + player.height > that.activeLadderSprite.y + 16 && player.x + player.width / 2 > that.activeLadderSprite.x && player.x + player.width / 2 < that.activeLadderSprite.x + that.activeLadderSprite.width) {
-                    console.log("climb");
                     GameParams.gravity = 0;
                     that.disableGravity = true;
                     player.y -= GameParams.verticalMoveInterval;
@@ -266,7 +267,6 @@ var TheIncredibleStory = Class.create({
             }
 
             if (that.player.isMoving) {
-
 
                 var new_x = that.player.x + that.player.moveXPerFrame;
 
@@ -395,7 +395,7 @@ var TheIncredibleStory = Class.create({
             var sprite = new Sprite(32, 32);
             sprite.image = this.game.assets["assets/graphics/levelTiles.png"];
             sprite.frame = [11, 11, 11, 12, 12, 12, 13, 13, 13, 14, 14, 14];
-            sprite.x = player.x + player.width / 2;
+            sprite.x = Math.round(player.x / 32) * 32;
             sprite.y = player.y + player.height - sprite.height;
             this.currentLevelScene.addChild(sprite);
             var that = this;
