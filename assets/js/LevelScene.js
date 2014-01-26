@@ -4,6 +4,10 @@ var LevelScene = Class.create(Scene, {
     middleSprite: null,
     levelSprite: null,
     timeLabel: null,
+    ladderAbilitySprite: null,
+    transparentAbilitySprite: null,
+    springAbilitySprite: null,
+    abilityBar: null,
     init: function (level) {
         var game, levelMap, collisionData, middleMap, backgroundMap, interractMap, interractCollisionData;
 
@@ -42,12 +46,34 @@ var LevelScene = Class.create(Scene, {
 
         this.timeLabel = new Label();
         this.timeLabel.text = "00:60";
-        this.timeLabel.color = "black";
+        this.timeLabel.color = "white";
         this.timeLabel.textAlign = "right";
         this.timeLabel.font = "62px sans-serif";
         this.timeLabel.x = this.width - this.timeLabel.width - 20;
+        this.timeLabel.y = 20;
 
         this.addChild(this.timeLabel);
+
+        this.abilityBar = new Group(202, 64);
+        this.abilityBar.x = 20;
+        this.abilityBar.y = 20;
+
+        this.ladderAbilitySprite = new Sprite(64, 64);
+        this.ladderAbilitySprite.x = this.abilityBar.x;
+        this.ladderAbilitySprite.image = game.assets["assets/graphics/morph_ladder_on.png"];
+        this.abilityBar.addChild(this.ladderAbilitySprite);
+
+        this.transparentAbilitySprite = new Sprite(64, 64);
+        this.transparentAbilitySprite.x = this.ladderAbilitySprite.x + 64 + 5;
+        this.transparentAbilitySprite.image = game.assets["assets/graphics/morph_trans_on.png"];
+        this.abilityBar.addChild(this.transparentAbilitySprite);
+
+        this.springAbilitySprite = new Sprite(64, 64);
+        this.springAbilitySprite.x = this.transparentAbilitySprite.x + 64 + 5;
+        this.springAbilitySprite.image = game.assets["assets/graphics/morph_spring_on.png"];
+        this.abilityBar.addChild(this.springAbilitySprite);
+
+        this.addChild(this.abilityBar);
 
     },
 
