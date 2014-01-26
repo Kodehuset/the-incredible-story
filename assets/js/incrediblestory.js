@@ -295,7 +295,6 @@ var TheIncredibleStory = Class.create({
                     }
 
                     that.player.y = new_player_bottom_loc - that.player.height;
-                    //GameParams.gravity = GameParams.startGravity;
                     that.player.isFalling = false;
                 } else {
 
