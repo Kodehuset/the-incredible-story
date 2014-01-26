@@ -24,7 +24,7 @@ var LevelScene = Class.create(Scene, {
         this.addChild(this.backgroundSprite);
 
         // Middle sprite
-        this.middleSprite = new Map(128, 320);
+        this.middleSprite = new Map(256, 320);
         this.middleSprite.image = game.assets["assets/graphics/middleTiles.png"];
 
         middleMap = eval(game.assets["assets/graphics/" + level + "/middle.map"]);
