@@ -154,6 +154,7 @@ var TheIncredibleStory = Class.create({
         that.player.frame = GameParams.playerStopAnimation;
         that.player.direction = 1;
         that.player.y = levelOne.getPlayerStartY() - that.player.image.height;
+        that.player.x = 200;
         levelOne.addChild(that.player);
 
         levelOne.addEventListener(Event.RIGHT_BUTTON_DOWN, function () {
