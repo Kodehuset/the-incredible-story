@@ -159,7 +159,7 @@ var TheIncredibleStory = Class.create({
 
         levelOne.addEventListener(Event.RIGHT_BUTTON_DOWN, function () {
 
-            if(that.player.frame == GameParams.playerStopAnimation) {
+            if (that.player.frame == GameParams.playerStopAnimation) {
                 that.player.frame = GameParams.playerMoveAnimation;
             }
 
@@ -195,7 +195,7 @@ var TheIncredibleStory = Class.create({
         levelOne.addEventListener(Event.LEFT_BUTTON_DOWN, function () {
 
 
-            if(that.player.frame == GameParams.playerStopAnimation) {
+            if (that.player.frame == GameParams.playerStopAnimation) {
                 that.player.frame = GameParams.playerMoveAnimation;
             }
 
@@ -383,7 +383,6 @@ var TheIncredibleStory = Class.create({
             var player = this.player;
             player.isInterracting = true;
 
-
             var sprite = new Sprite(32, 32);
             sprite.image = this.game.assets["assets/graphics/levelTiles.png"];
             sprite.frame = [11, 11, 11, 12, 12, 12, 13, 13, 13, 14, 14, 14];
@@ -399,7 +398,7 @@ var TheIncredibleStory = Class.create({
 
             setTimeout(function () {
                 that.currentLevelScene.removeChild(sprite);
-                that.player.frame = [0, 0, 0, 1, 1, 1];
+                that.resetPlayerAnimations();
             }, 3000);
 
         } else if (tileIsRift && this.player.morph === GameParams.ladderMorph) {
@@ -441,7 +440,7 @@ var TheIncredibleStory = Class.create({
                 player.isInterracting = false;
                 player.morph = null;
                 that.resetGravity();
-                that.player.frame = [0, 0, 0, 1, 1, 1];
+                that.resetPlayerAnimations();
             }, 3000);
 
 
@@ -475,9 +474,16 @@ var TheIncredibleStory = Class.create({
                 player.isInterracting = false;
                 player.morph = null;
                 that.currentLevelScene.removeChild(pit_sprite);
-                that.player.frame = [0, 0, 0, 1, 1, 1];
+                that.resetPlayerAnimations();
             }, 3000);
         }
+    },
+
+    resetPlayerAnimations: function () {
+
+        GameParams.playerMoveAnimation = [0, 0, 0, 1, 1, 1];
+        GameParams.playerStopAnimation = [0];
+        this.player.frame = GameParams.playerStopAnimation;
     },
 
     run: function () {
@@ -491,15 +497,21 @@ var TheIncredibleStory = Class.create({
         if (event.keyCode === 49) { // 1
 
             this.player.morph = GameParams.ladderMorph;
-            this.player.frame = [2, 2, 2, 3, 3, 3];
+            GameParams.playerMoveAnimation = [2, 2, 2, 3, 3, 3];
+            GameParams.playerStopAnimation = [2];
+            this.player.frame = GameParams.playerStopAnimation;
         } else if (event.keyCode === 50) { // 2
 
             this.player.morph = GameParams.drillMorph;
-            this.player.frame = [4, 4, 4, 5, 5, 5];
+            GameParams.playerMoveAnimation = [4, 4, 4, 5, 5, 5];
+            GameParams.playerStopAnimation = [4];
+            this.player.frame = GameParams.playerStopAnimation;
         } else if (event.keyCode === 51) { // 3
 
             this.player.morph = GameParams.springMorph;
-            this.player.frame = [6, 6, 6, 7, 7, 7];
+            GameParams.playerMoveAnimation = [6, 6, 6, 7, 7, 7];
+            GameParams.playerStopAnimation = [6];
+            this.player.frame = GameParams.playerStopAnimation;
         } else if (event.keyCode === 32) { // spacebar
 
             if (this.player.y - GameParams.jumpHeight < 0 || this.player.isFalling === true) {
