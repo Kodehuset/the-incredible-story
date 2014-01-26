@@ -1,5 +1,6 @@
 enchant();
 var GameParams = {
+    springJumpHeight: 500,
     jumpHeight: 150,
     horizontalMoveInterval: 40,
     verticalMoveInterval: 40,
@@ -399,7 +400,12 @@ var TheIncredibleStory = Class.create({
             this.currentLevelScene.addChild(sprite);
             var that = this;
 
-            player.tl.moveTo(player.x, player.y - 800, 10).then(function () {
+            var target_y = player.y;
+            while(!that.currentLevelScene.collides(player.x, target_y) && target_y > player.y - GameParams.springJumpHeight) {
+                console.log(target_y);
+                target_y -= 32;
+            }
+            player.tl.moveTo(player.x, target_y, 10).then(function () {
                 player.isInterracting = false;
                 player.morph = null;
             });
