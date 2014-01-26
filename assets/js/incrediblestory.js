@@ -220,6 +220,22 @@ var TheIncredibleStory = Class.create({
 
             });
 
+
+//            var gameMenu = new Scene();
+//            var menu = new Sprite(that.game.width, that.game.height);
+//            var startGame = new Label("Start game");
+//            menu.addEventListener(Event.TOUCH_END, function () {
+//                                    console.log("new game!");
+//                that.game.pushScene(levelOne);
+//            });
+//            startGame.font = "32px sans-serif";
+//            startGame.color = "green";
+//            startGame.x = (that.game.width / 2) - (startGame.width / 2);
+//            startGame.y = 200;
+//            gameMenu.addChild(menu);
+//            gameMenu.addChild(startGame);
+
+
             if (that.playIntro !== false) {
 
                 if (that.playInto !== false) {
@@ -272,6 +288,7 @@ var TheIncredibleStory = Class.create({
                 that.game.pushScene(that.introScene);
             } else {
 
+
                 that.game.pushScene(levelOne);
             }
         };
@@ -294,6 +311,10 @@ var TheIncredibleStory = Class.create({
 
         gameOverScene.addChild(label);
         this.game.pushScene(gameOverScene);
+        var that = this;
+        setTimeout(function () {
+            that.game.popScene();
+        }, 3000);
     },
 
     completeGame: function () {
@@ -309,6 +330,10 @@ var TheIncredibleStory = Class.create({
 
         completeGameScene.addChild(label);
         this.game.pushScene(completeGameScene);
+        var that = this;
+        setTimeout(function () {
+            that.game.popScene();
+        }, 3000);
     },
 
     resetGravity: function () {
@@ -429,7 +454,7 @@ var TheIncredibleStory = Class.create({
             that.timeLeft--;
             that.currentLevelScene.updateTime("00:" + that.timeLeft);
 
-            if(that.timeLeft == 0) {
+            if (that.timeLeft == 0) {
                 that.gameOver();
             }
         }, 1000);
