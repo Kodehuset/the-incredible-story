@@ -20,6 +20,8 @@ var TheIncredibleStory = Class.create({
     introScene: null,
     introSlides: [],
     timeLeft: 60,
+    gameActive: false,
+    countdownIntervalId: null,
     initialize: function () {
 
         this.game = new Core(1280, 720);
@@ -44,196 +46,35 @@ var TheIncredibleStory = Class.create({
         var that = this;
         this.game.onload = function () {
 
-
-            var levelOne = new LevelScene();
-            that.currentLevelScene = levelOne;
-            levelOne.init("level1");
-
-            that.player = new Sprite(32, 64);
-            that.player.image = that.game.assets["assets/graphics/player.png"];
-            that.player.frame = [0, 0, 0, 1, 1, 1];
-            that.player.direction = 1;
-            that.player.y = levelOne.getPlayerStartY() - that.player.image.height;
-            levelOne.addChild(that.player);
-
-            that.game.addEventListener(Event.RIGHT_BUTTON_DOWN, function () {
-
-                that.resetGravity();
-
-                if (that.player.direction !== 1) {
-                    that.player.tl.scaleTo(1, 1, 2);
-                    that.player.direction = 1;
+            var gameMenu = new Scene();
+            var menu = new Sprite(that.game.width, that.game.height);
+            var startGame = new Label("Press an arrow key to start");
+            startGame.width = 600;
+            startGame.textAlign = "center";
+            startGame.touchEnabled = true;
+            gameMenu.addEventListener(Event.INPUT_END, function () {
+                that.timeLeft = 60;
+                that.createNewGame(that);
+                that.game.pushScene(that.currentLevelScene);
+                if (that.countdownIntervalId !== null) {
+                    clearInterval(that.countdownIntervalId);
                 }
+                that.countdownIntervalId = setInterval(function () {
+                    that.timeLeft--;
+                    that.currentLevelScene.updateTime("00:" + that.timeLeft);
 
-                if (that.player.x + that.player.image.width + GameParams.horizontalMoveInterval > levelOne.levelSprite.width) {
-                    return;
-                }
-
-
-                if (that.player.isMoving === true) {
-                    return;
-                }
-
-                var new_x = that.player.x + GameParams.horizontalMoveInterval;
-                that.player.moveXPerFrame = (new_x - that.player.x) / 5;
-                that.player.moveToX = new_x;
-                that.player.isMoving = true;
-
-
-            });
-
-            that.game.addEventListener(Event.RIGHT_BUTTON_UP, function () {
-                that.player.isMoving = false;
-            });
-
-            that.game.addEventListener(Event.LEFT_BUTTON_DOWN, function () {
-
-                that.resetGravity();
-
-
-                if (that.player.direction !== -1) {
-                    that.player.tl.scaleTo(-1, 1, 2);
-                    that.player.direction = -1;
-                }
-
-                if (that.player.x - GameParams.horizontalMoveInterval < 0) {
-                    return;
-                }
-
-                if (that.player.isMoving === true) {
-                    return;
-                }
-
-                var new_x = (that.player.x - GameParams.horizontalMoveInterval);
-                that.player.moveXPerFrame = -1 * (that.player.x - new_x) / 5;
-                that.player.moveToX = new_x;
-                that.player.isMoving = true;
-
-            });
-
-            that.game.addEventListener(Event.LEFT_BUTTON_UP, function () {
-                that.player.isMoving = false;
-            });
-
-            that.game.addEventListener(Event.UP_BUTTON_UP, function () {
-
-
-                var player = that.player;
-                if (player.morph === GameParams.ladderMorph) {
-                    if (that.activeLadderSprite.within(player) === true) {
-                        GameParams.gravity = 0;
-                        player.y -= GameParams.horizontalMoveInterval;
-                    } else {
-                        that.resetGravity();
+                    if (that.timeLeft === 0) {
+                        that.gameOver();
                     }
-                }
+                }, 1000);
 
             });
-
-
-            that.game.addEventListener(Event.ENTER_FRAME, function () {
-
-
-                if (that.player.isJumping) {
-
-                    var new_y = that.player.y + that.player.jumpYPerFrame;
-                    if (levelOne.collides(that.player.x, new_y)) {
-                        that.player.isJumping = false; // done jumping - we've hit something
-                    } else {
-
-                        that.player.y += that.player.jumpYPerFrame;
-                        if (that.player.y === that.player.jumpToY) {
-                            that.player.isJumping = false;
-                        }
-                    }
-                }
-
-                if (that.player.isMoving) {
-
-
-                    var new_x = that.player.x + that.player.moveXPerFrame;
-
-                    if (levelOne.collides(new_x + that.player.width, that.player.y) === true) {
-                        that.player.isMoving = false;
-                    } else if (new_x < 0) {
-                        that.player.x = 0;
-                    } else if (new_x + that.player.width > levelOne.getLevelWidth()) {
-                        that.player.x = levelOne.getLevelWidth() - that.player.width;
-                    } else {
-                        that.player.x += that.player.moveXPerFrame;
-
-                        var distanceFromLeftEdge = that.player.x - Math.abs(levelOne.x);
-                        var distanceFromRightEdge = levelOne.getLevelWidth() - that.game.width - that.player.x;
-                        if (distanceFromRightEdge < GameParams.playfieldPushDistance && (Math.abs(levelOne.x) + that.game.width < levelOne.getLevelWidth())) {
-                            levelOne.x -= that.player.moveXPerFrame;
-                        } else if (distanceFromLeftEdge < GameParams.playfieldPushDistance && levelOne.x < 0) {
-                            levelOne.x -= that.player.moveXPerFrame;
-                        }
-
-                        that.currentLevelScene.timeLabel.x = (Math.abs(levelOne.x) + that.game.width) - that.currentLevelScene.timeLabel.width - 20;
-                    }
-
-                }
-
-
-                if (!that.player.isJumping) {
-
-                    var new_player_bottom_loc = that.player.y + that.player.height + (GameParams.gravity);
-
-                    if (levelOne.collides(that.player.x, new_player_bottom_loc) === true) {
-
-                        new_player_bottom_loc--;
-                        while (levelOne.collides(that.player.x, new_player_bottom_loc) === true) {
-                            new_player_bottom_loc--;
-                        }
-
-                        that.player.y = new_player_bottom_loc - that.player.height;
-                        //GameParams.gravity = GameParams.startGravity;
-                        that.player.isFalling = false;
-                    } else {
-
-                        that.player.y = that.player.y + GameParams.gravity;
-                        that.player.isFalling = true;
-                    }
-                }
-
-
-                if (that.player.y + that.player.height >= that.game.height) {
-                    that.gameOver();
-                    return;
-                }
-
-
-                var interractionTile = levelOne.stepsOnTile(that.player);
-
-                if (interractionTile != -1 && that.player.isInterracting !== true) {
-
-                    that.interractWithTile(interractionTile);
-                }
-
-                var alignedTile = levelOne.nextToTile(that.player);
-                if (alignedTile === GameParams.dogSprite) {
-
-                    that.completeGame();
-                }
-
-
-            });
-
-
-//            var gameMenu = new Scene();
-//            var menu = new Sprite(that.game.width, that.game.height);
-//            var startGame = new Label("Start game");
-//            menu.addEventListener(Event.TOUCH_END, function () {
-//                                    console.log("new game!");
-//                that.game.pushScene(levelOne);
-//            });
-//            startGame.font = "32px sans-serif";
-//            startGame.color = "green";
-//            startGame.x = (that.game.width / 2) - (startGame.width / 2);
-//            startGame.y = 200;
-//            gameMenu.addChild(menu);
-//            gameMenu.addChild(startGame);
+            startGame.font = "32px sans-serif";
+            startGame.color = "green";
+            startGame.x = (that.game.width / 2) - (startGame.width / 2);
+            startGame.y = 200;
+            gameMenu.addChild(menu);
+            gameMenu.addChild(startGame);
 
 
             if (that.playIntro !== false) {
@@ -275,7 +116,7 @@ var TheIncredibleStory = Class.create({
                                     slide5.tl.delay(90).then(function () {
                                         that.introScene.removeChild(slide5);
                                         slide4.tl.delay(60).fadeOut(30).then(function () {
-                                            that.game.pushScene(levelOne);
+                                            that.game.pushScene(gameMenu);
                                         });
                                     });
                                 });
@@ -289,7 +130,7 @@ var TheIncredibleStory = Class.create({
             } else {
 
 
-                that.game.pushScene(levelOne);
+                that.game.pushScene(gameMenu);
             }
         };
 
@@ -298,9 +139,185 @@ var TheIncredibleStory = Class.create({
 
     },
 
+    createNewGame: function (that) {
+
+        var levelOne = new LevelScene();
+        that.currentLevelScene = levelOne;
+        levelOne.init("level1");
+
+        that.player = new Sprite(32, 64);
+        that.player.image = that.game.assets["assets/graphics/player.png"];
+        that.player.frame = [0, 0, 0, 1, 1, 1];
+        that.player.direction = 1;
+        that.player.y = levelOne.getPlayerStartY() - that.player.image.height;
+        levelOne.addChild(that.player);
+
+        levelOne.addEventListener(Event.RIGHT_BUTTON_DOWN, function () {
+
+            that.resetGravity();
+
+            if (that.player.direction !== 1) {
+                that.player.tl.scaleTo(1, 1, 2);
+                that.player.direction = 1;
+            }
+
+            if (that.player.x + that.player.image.width + GameParams.horizontalMoveInterval > levelOne.levelSprite.width) {
+                return;
+            }
+
+
+            if (that.player.isMoving === true) {
+                return;
+            }
+
+            var new_x = that.player.x + GameParams.horizontalMoveInterval;
+            that.player.moveXPerFrame = (new_x - that.player.x) / 5;
+            that.player.moveToX = new_x;
+            that.player.isMoving = true;
+
+
+        });
+
+        levelOne.addEventListener(Event.RIGHT_BUTTON_UP, function () {
+            that.player.isMoving = false;
+        });
+
+        levelOne.addEventListener(Event.LEFT_BUTTON_DOWN, function () {
+
+            that.resetGravity();
+
+
+            if (that.player.direction !== -1) {
+                that.player.tl.scaleTo(-1, 1, 2);
+                that.player.direction = -1;
+            }
+
+            if (that.player.x - GameParams.horizontalMoveInterval < 0) {
+                return;
+            }
+
+            if (that.player.isMoving === true) {
+                return;
+            }
+
+            var new_x = (that.player.x - GameParams.horizontalMoveInterval);
+            that.player.moveXPerFrame = -1 * (that.player.x - new_x) / 5;
+            that.player.moveToX = new_x;
+            that.player.isMoving = true;
+
+        });
+
+        levelOne.addEventListener(Event.LEFT_BUTTON_UP, function () {
+            that.player.isMoving = false;
+        });
+
+        levelOne.addEventListener(Event.UP_BUTTON_UP, function () {
+
+
+            var player = that.player;
+            if (player.morph === GameParams.ladderMorph) {
+                if (that.activeLadderSprite.within(player) === true) {
+                    GameParams.gravity = 0;
+                    player.y -= GameParams.horizontalMoveInterval;
+                } else {
+                    that.resetGravity();
+                }
+            }
+
+        });
+
+
+        levelOne.addEventListener(Event.ENTER_FRAME, function () {
+
+            if (that.player.isJumping) {
+
+                var new_y = that.player.y + that.player.jumpYPerFrame;
+                if (levelOne.collides(that.player.x, new_y)) {
+                    that.player.isJumping = false; // done jumping - we've hit something
+                } else {
+
+                    that.player.y += that.player.jumpYPerFrame;
+                    if (that.player.y === that.player.jumpToY) {
+                        that.player.isJumping = false;
+                    }
+                }
+            }
+
+            if (that.player.isMoving) {
+
+
+                var new_x = that.player.x + that.player.moveXPerFrame;
+
+                if (levelOne.collides(new_x + that.player.width, that.player.y) === true) {
+                    that.player.isMoving = false;
+                } else if (new_x < 0) {
+                    that.player.x = 0;
+                } else if (new_x + that.player.width > levelOne.getLevelWidth()) {
+                    that.player.x = levelOne.getLevelWidth() - that.player.width;
+                } else {
+                    that.player.x += that.player.moveXPerFrame;
+
+                    var distanceFromLeftEdge = that.player.x - Math.abs(levelOne.x);
+                    var distanceFromRightEdge = levelOne.getLevelWidth() - that.game.width - that.player.x;
+                    if (distanceFromRightEdge < GameParams.playfieldPushDistance && (Math.abs(levelOne.x) + that.game.width < levelOne.getLevelWidth())) {
+                        levelOne.x -= that.player.moveXPerFrame;
+                    } else if (distanceFromLeftEdge < GameParams.playfieldPushDistance && levelOne.x < 0) {
+                        levelOne.x -= that.player.moveXPerFrame;
+                    }
+
+                    that.currentLevelScene.timeLabel.x = (Math.abs(levelOne.x) + that.game.width) - that.currentLevelScene.timeLabel.width - 20;
+                }
+
+            }
+
+
+            if (!that.player.isJumping) {
+
+                var new_player_bottom_loc = that.player.y + that.player.height + (GameParams.gravity);
+
+                if (levelOne.collides(that.player.x, new_player_bottom_loc) === true) {
+
+                    new_player_bottom_loc--;
+                    while (levelOne.collides(that.player.x, new_player_bottom_loc) === true) {
+                        new_player_bottom_loc--;
+                    }
+
+                    that.player.y = new_player_bottom_loc - that.player.height;
+                    //GameParams.gravity = GameParams.startGravity;
+                    that.player.isFalling = false;
+                } else {
+
+                    that.player.y = that.player.y + GameParams.gravity;
+                    that.player.isFalling = true;
+                }
+            }
+
+
+            if (that.player.y + that.player.height >= that.game.height) {
+                that.gameOver();
+                return;
+            }
+
+
+            var interractionTile = levelOne.stepsOnTile(that.player);
+
+            if (interractionTile != -1 && that.player.isInterracting !== true) {
+
+                that.interractWithTile(interractionTile);
+            }
+
+            var alignedTile = levelOne.nextToTile(that.player);
+            if (alignedTile === GameParams.dogSprite) {
+
+                that.completeGame();
+            }
+
+
+        });
+    },
+
     gameOver: function () {
 
-        this.game.popScene();
         var gameOverScene = new Scene(this.game.width, this.game.height);
         gameOverScene.backgroundColor = "white";
         var label = new Label();
@@ -314,12 +331,12 @@ var TheIncredibleStory = Class.create({
         var that = this;
         setTimeout(function () {
             that.game.popScene();
+            that.game.popScene();
         }, 3000);
     },
 
     completeGame: function () {
 
-        this.game.popScene();
         var completeGameScene = new Scene(this.game.width, this.game.height);
         completeGameScene.backgroundColor = "white";
         var label = new Label();
@@ -332,6 +349,7 @@ var TheIncredibleStory = Class.create({
         this.game.pushScene(completeGameScene);
         var that = this;
         setTimeout(function () {
+            that.game.popScene();
             that.game.popScene();
         }, 3000);
     },
@@ -449,15 +467,7 @@ var TheIncredibleStory = Class.create({
     run: function () {
 
         this.game.start();
-        var that = this;
-        setInterval(function () {
-            that.timeLeft--;
-            that.currentLevelScene.updateTime("00:" + that.timeLeft);
 
-            if (that.timeLeft == 0) {
-                that.gameOver();
-            }
-        }, 1000);
     },
 
     keyUp: function (event) {
