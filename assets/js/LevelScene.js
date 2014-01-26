@@ -3,7 +3,7 @@ var LevelScene = Class.create(Scene, {
     backgroundSprite: null,
     middleSprite: null,
     levelSprite: null,
-
+    timeLabel: null,
     init: function (level) {
         var game, levelMap, collisionData, middleMap, backgroundMap, interractMap, interractCollisionData;
 
@@ -39,6 +39,16 @@ var LevelScene = Class.create(Scene, {
 
         this.addChild(this.levelSprite);
 
+
+        this.timeLabel = new Label();
+        this.timeLabel.text = "00:60";
+        this.timeLabel.color = "black";
+        this.timeLabel.textAlign = "right";
+        this.timeLabel.font = "62px sans-serif";
+        this.timeLabel.x = this.width - this.timeLabel.width - 20;
+
+        this.addChild(this.timeLabel);
+
     },
 
     getPlayerStartY: function () {
@@ -70,6 +80,10 @@ var LevelScene = Class.create(Scene, {
 
     nextToTile: function (player) {
         return this.levelSprite.checkTile(player.x + 48, player.y + 48);
+    },
+
+    updateTime: function(time) {
+        this.timeLabel.text = time;
     }
 
 });
