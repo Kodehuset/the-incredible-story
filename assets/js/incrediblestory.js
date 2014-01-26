@@ -271,7 +271,7 @@ var TheIncredibleStory = Class.create({
                 var new_x = that.player.x + that.player.moveXPerFrame;
 
 
-                if (levelOne.collides(new_x + that.player.width, that.player.y) === true) {
+                if (levelOne.collides(new_x + that.player.width, that.player.y) === true || levelOne.collides(new_x, that.player.y)) {
                     that.player.x = Math.round(new_x / 32) * 32;
                     that.player.isMoving = false;
                 } else if (new_x < 0) {
@@ -289,8 +289,6 @@ var TheIncredibleStory = Class.create({
                         levelOne.x -= that.player.moveXPerFrame;
                     }
 
-                    // console.log("x=", that.player.x, ", y=", that.player.y);
-
                     that.currentLevelScene.timeLabel.x = (Math.abs(levelOne.x) + that.game.width) - that.currentLevelScene.timeLabel.width - 20;
                     that.currentLevelScene.abilityBar.x = (Math.abs(levelOne.x) + 20);
                 }
@@ -300,7 +298,7 @@ var TheIncredibleStory = Class.create({
 
             if (!that.player.isJumping && that.disableGravity !== true) {
 
-                var new_player_bottom_loc = Math.round(that.player.y / 32) * 32 + that.player.height + (GameParams.gravity);
+                var new_player_bottom_loc = that.player.y + that.player.height + (GameParams.gravity);
 
                 var player_x = Math.round(that.player.x / 32) * 32 + that.player.width / 2;
                 if (levelOne.collides(player_x, new_player_bottom_loc) === true) {
@@ -312,7 +310,7 @@ var TheIncredibleStory = Class.create({
 
                     //console.log("modified y=", new_player_bottom_loc, ", minus height=", new_player_bottom_loc - that.player.height);
 
-                    that.player.y = new_player_bottom_loc - that.player.height;
+                    that.player.y = Math.round(new_player_bottom_loc / 32) * 32 - that.player.height;
                     that.player.isFalling = false;
                 } else {
 
