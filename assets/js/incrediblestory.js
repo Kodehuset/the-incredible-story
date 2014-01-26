@@ -9,7 +9,9 @@ var GameParams = {
     ladderMorph: 1,
     drillMorph: 2,
     springMorph: 3,
-    dogSprite: 17
+    dogSprite: 17,
+    playerMoveAnimation: [0, 0, 0, 1, 1, 1],
+    playerStopAnimation: [0]
 };
 
 var TheIncredibleStory = Class.create({
@@ -51,8 +53,11 @@ var TheIncredibleStory = Class.create({
             var startGame = new Label("Press an arrow key to start");
             startGame.width = 600;
             startGame.textAlign = "center";
-            startGame.touchEnabled = true;
-            gameMenu.addEventListener(Event.INPUT_END, function () {
+            startGame._touchable = true;
+            window.addEventListener("click", function () {
+                if (that.game.currentScene !== gameMenu) {
+                    return;
+                }
                 that.timeLeft = 60;
                 that.createNewGame(that);
                 that.game.pushScene(that.currentLevelScene);
@@ -61,7 +66,7 @@ var TheIncredibleStory = Class.create({
                 }
                 that.countdownIntervalId = setInterval(function () {
                     that.timeLeft--;
-                    that.currentLevelScene.updateTime("00:" + that.timeLeft);
+                    that.currentLevelScene.updateTime("00:" + (that.timeLeft < 10 ? "0" + that.timeLeft : that.timeLeft));
 
                     if (that.timeLeft === 0) {
                         that.gameOver();
@@ -147,12 +152,16 @@ var TheIncredibleStory = Class.create({
 
         that.player = new Sprite(32, 64);
         that.player.image = that.game.assets["assets/graphics/player.png"];
-        that.player.frame = [0, 0, 0, 1, 1, 1];
+        that.player.frame = GameParams.playerStopAnimation;
         that.player.direction = 1;
         that.player.y = levelOne.getPlayerStartY() - that.player.image.height;
         levelOne.addChild(that.player);
 
         levelOne.addEventListener(Event.RIGHT_BUTTON_DOWN, function () {
+
+            if(that.player.frame == GameParams.playerStopAnimation) {
+                that.player.frame = GameParams.playerMoveAnimation;
+            }
 
             that.resetGravity();
 
@@ -180,9 +189,15 @@ var TheIncredibleStory = Class.create({
 
         levelOne.addEventListener(Event.RIGHT_BUTTON_UP, function () {
             that.player.isMoving = false;
+            that.player.frame = GameParams.playerStopAnimation;
         });
 
         levelOne.addEventListener(Event.LEFT_BUTTON_DOWN, function () {
+
+
+            if(that.player.frame == GameParams.playerStopAnimation) {
+                that.player.frame = GameParams.playerMoveAnimation;
+            }
 
             that.resetGravity();
 
@@ -209,6 +224,7 @@ var TheIncredibleStory = Class.create({
 
         levelOne.addEventListener(Event.LEFT_BUTTON_UP, function () {
             that.player.isMoving = false;
+            that.player.frame = GameParams.playerStopAnimation;
         });
 
         levelOne.addEventListener(Event.UP_BUTTON_UP, function () {
