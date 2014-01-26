@@ -109,11 +109,9 @@ var TheIncredibleStory = Class.create({
 
                     var slide4 = new Sprite(that.game.width, that.game.height);
                     slide4.image = that.game.assets["assets/graphics/opening4.gif"];
-                    slide4.opacity = 0;
 
                     var slide5 = new Sprite(that.game.width, that.game.height);
                     slide5.image = that.game.assets["assets/graphics/opening5.gif"];
-                    slide5.opacity = 0;
 
                     var slide6 = new Sprite(that.game.width, that.game.height);
                     slide6.image = that.game.assets["assets/graphics/opening_ingame1.gif"];
@@ -145,24 +143,33 @@ var TheIncredibleStory = Class.create({
                         that.introScene.addChild(slide2);
                         slide2.tl.fadeIn(30).delay(90).fadeOut(30).then(function () {
                             that.introScene.addChild(slide3);
-                            slide3.tl.fadeIn(30).delay(90).fadeOut(10).then(function () {
+                            slide3.tl.fadeIn(30).delay(90).then(function () {
                                 that.introScene.addChild(slide4);
-                                slide4.tl.fadeIn(10).delay(30).then(function () {
+                                slide4.tl.delay(30).then(function () {
                                     that.introScene.addChild(slide5);
-                                    slide5.tl.delay(30).fadeOut(10).then(function () {
-                                        that.introScene.addChild(slide6);
-                                        slide6.tl.fadeIn(10).delay(60).then(function () {
-                                            that.introScene.addChild(slide7);
-                                            slide7.tl.delay(90).then(function () {
-                                                that.introScene.addChild(slide8);
-                                                slide8.tl.delay(90).then(function () {
-                                                    that.introScene.addChild(slide9);
-                                                    slide9.tl.delay(90).then(function () {
-                                                        that.introScene.addChild(slide10);
-                                                        slide10.tl.delay(90).then(function () {
-                                                            that.introScene.addChild(slide11);
-                                                            slide11.tl.delay(90).then(function () {
-                                                                that.game.pushScene(gameMenu);
+                                    slide5.tl.delay(30).then(function () {
+                                        that.introScene.addChild(slide4);
+                                        slide4.tl.delay(30).then(function () {
+                                            that.introScene.addChild(slide5);
+                                            slide5.tl.delay(30).then(function () {
+                                                that.introScene.addChild(slide3);
+                                                slide3.tl.delay(90).then(function () {
+                                                    that.introScene.addChild(slide6);
+                                                    slide6.tl.fadeIn(10).delay(60).then(function () {
+                                                        that.introScene.addChild(slide7);
+                                                        slide7.tl.delay(90).then(function () {
+                                                            that.introScene.addChild(slide8);
+                                                            slide8.tl.delay(90).then(function () {
+                                                                that.introScene.addChild(slide9);
+                                                                slide9.tl.delay(90).then(function () {
+                                                                    that.introScene.addChild(slide10);
+                                                                    slide10.tl.delay(90).then(function () {
+                                                                        that.introScene.addChild(slide11);
+                                                                        slide11.tl.delay(90).then(function () {
+                                                                            that.game.pushScene(gameMenu);
+                                                                        });
+                                                                    });
+                                                                });
                                                             });
                                                         });
                                                     });
