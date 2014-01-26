@@ -11,7 +11,8 @@ var GameParams = {
     springMorph: 3,
     dogSprite: 17,
     playerMoveAnimation: [0, 0, 0, 1, 1, 1],
-    playerStopAnimation: [0]
+    playerStopAnimation: [0],
+    backgroundColor: "#69c1fb"
 };
 
 var TheIncredibleStory = Class.create({
@@ -42,8 +43,9 @@ var TheIncredibleStory = Class.create({
         this.game.preload("assets/graphics/opening5.gif");
         this.game.preload("assets/graphics/start1.gif");
         this.game.preload("assets/graphics/end1.gif");
+        this.game.preload("assets/graphics/end2.gif");
 
-        this.game.rootScene.backgroundColor = "#69c1fb";
+        this.game.rootScene.backgroundColor = GameParams.backgroundColor;
         this.game.fps = 30;
 
         var windowWidth = $(window).width();
@@ -51,6 +53,7 @@ var TheIncredibleStory = Class.create({
         this.game.onload = function () {
 
             var gameMenu = new Scene();
+            gameMenu.backgroundColor = GameParams.backgroundColor;
             var menu = new Sprite(that.game.width, that.game.height);
             menu.image = that.game.assets["assets/graphics/start1.gif"];
             window.addEventListener("click", function () {
@@ -328,34 +331,36 @@ var TheIncredibleStory = Class.create({
     gameOver: function () {
 
         var gameOverScene = new Scene();
+        gameOverScene.backgroundColor = GameParams.backgroundColor;
         var graphic = new Sprite(this.game.width, this.game.height);
         graphic.image = this.game.assets["assets/graphics/end1.gif"];
         gameOverScene.addChild(graphic);
         this.game.pushScene(gameOverScene);
         var that = this;
         setTimeout(function () {
-            that.game.popScene();
-            that.game.popScene();
+            graphic.tl.fadeOut(30).then(function () {
+                that.game.popScene();
+                that.game.popScene();
+            });
         }, 5000);
     },
 
     completeGame: function () {
 
         var completeGameScene = new Scene(this.game.width, this.game.height);
-        completeGameScene.backgroundColor = "white";
-        var label = new Label();
-        label.text = "You made it!";
-        label.textAlign = "center";
-        label.x = (this.game.width / 2) - (label.width / 2);
-        label.y = (this.game.height / 2) - (label.height / 2);
-
-        completeGameScene.addChild(label);
+        completeGameScene.backgroundColor = GameParams.backgroundColor;
+        var graphic = new Sprite(this.game.width, this.game.height);
+        graphic.image = this.game.assets["assets/graphics/end2.gif"];
+        completeGameScene.addChild(graphic);
         this.game.pushScene(completeGameScene);
         var that = this;
         setTimeout(function () {
-            that.game.popScene();
-            that.game.popScene();
-        }, 3000);
+            graphic.tl.fadeOut(30).then(function () {
+                that.game.popScene();
+                that.game.popScene();
+            });
+
+        }, 5000);
     },
 
     resetGravity: function () {
