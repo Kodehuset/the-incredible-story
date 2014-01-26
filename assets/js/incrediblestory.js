@@ -1,11 +1,12 @@
 enchant();
 var GameParams = {
+    springJumpHeight: 500,
     jumpHeight: 150,
     horizontalMoveInterval: 40,
     verticalMoveInterval: 40,
     gravity: 15,
     startGravity: 15,
-    playfieldPushDistance: 300,
+    playfieldPushDistance: 640,
     playfieldPushInterval: 10,
     ladderMorph: 1,
     drillMorph: 2,
@@ -173,7 +174,6 @@ var TheIncredibleStory = Class.create({
 
 
             if (that.player.x + that.player.image.width > levelOne.getLevelWidth() + GameParams.playfieldPushDistance) {
-                //console.log("x=", that.player.x + that.player.image.width, ", levelWidth=", levelOne.getLevelWidth() + GameParams.playfieldPushDistance);
                 return;
             }
 
@@ -241,7 +241,6 @@ var TheIncredibleStory = Class.create({
                     GameParams.gravity = 0;
                     that.disableGravity = true;
                     player.y -= GameParams.verticalMoveInterval;
-//                    player.isMoving = true;
                 } else {
                     that.resetGravity();
                 }
@@ -282,7 +281,8 @@ var TheIncredibleStory = Class.create({
                     that.player.x += that.player.moveXPerFrame;
 
                     var distanceFromLeftEdge = that.player.x - Math.abs(levelOne.x);
-                    var distanceFromRightEdge = levelOne.getLevelWidth() - that.game.width - that.player.x;
+                    var distanceFromRightEdge = that.game.width - that.player.x / that.game.width  * that.game.width;
+                    //console.log("distanceFromLeftEdge: ", distanceFromLeftEdge);
                     if (distanceFromRightEdge < GameParams.playfieldPushDistance && (Math.abs(levelOne.x) + that.game.width < levelOne.getLevelWidth())) {
                         levelOne.x -= that.player.moveXPerFrame;
                     } else if (distanceFromLeftEdge < GameParams.playfieldPushDistance && levelOne.x < 0) {
@@ -400,7 +400,12 @@ var TheIncredibleStory = Class.create({
             this.currentLevelScene.addChild(sprite);
             var that = this;
 
-            player.tl.moveTo(player.x, player.y - 800, 10).then(function () {
+            var target_y = player.y;
+            while(!that.currentLevelScene.collides(player.x, target_y) && target_y > player.y - GameParams.springJumpHeight) {
+                console.log(target_y);
+                target_y -= 32;
+            }
+            player.tl.moveTo(player.x, target_y, 10).then(function () {
                 player.isInterracting = false;
                 player.morph = null;
             });
